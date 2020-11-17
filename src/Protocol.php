@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol;
 
 use Comely\DataTypes\Buffer\Binary;
+use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 
 /**
  * Class Protocol
@@ -11,19 +12,25 @@ use Comely\DataTypes\Buffer\Binary;
  */
 class Protocol implements ProtocolConstants
 {
-    /** @var self|null */
-    private static ?self $instance = null;
+    /** @var Config */
+    private Config $config;
 
     /**
-     * @return static
+     * Protocol constructor.
+     * @param array $config
+     * @throws ProtocolConfigException
      */
-    public static function getInstance(): self
+    public function __construct(array $config)
     {
-        if (!static::$instance) {
-            static::$instance = new self();
-        }
+        $this->config = new Config($config);
+    }
 
-        return static::$instance;
+    /**
+     * @return Config
+     */
+    public function config(): Config
+    {
+        return $this->config;
     }
 
     /**

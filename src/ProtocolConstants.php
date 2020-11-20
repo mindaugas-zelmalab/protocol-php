@@ -25,7 +25,9 @@ interface ProtocolConstants
     /** @var int Maximum size of a block */
     public const MAX_BLOCK_SIZE = 0x0F4240; // 1MB
     /** @var int Maximum length of transaction memo */
-    public const MAX_TX_MEMO_LEN = 16; // 16 bytes
+    public const MAX_TX_MEMO_LEN = 32; // 32 bytes
+    /** @var int Maximum transfers per transaction to a recipient */
+    public const MAX_TRANSFERS_PER_TX = 10; // 10 transfer objects
     /** @var int ECC curve Secp256k1 */
     public const ECDSA_CURVE = Curves::SECP256K1;
 }

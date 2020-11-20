@@ -9,6 +9,7 @@ use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 /**
  * Class Config
  * @package ForwardBlock\Protocol
+ * @property-read string $chainId
  * @property-read int $accountsPrefix
  * @property-read string $fancyPrefix
  * @property-read int $fancyPrefixLen
@@ -17,6 +18,8 @@ use ForwardBlock\Protocol\Exception\ProtocolConfigException;
  */
 class Config
 {
+    /** @var string */
+    private string $chainId;
     /** @var int */
     private int $accountsPrefix;
     /** @var string */
@@ -35,6 +38,14 @@ class Config
      */
     public function __construct(array $args)
     {
+        // Chain ID
+        $chainId = $args["chainId"];
+        if (!Validator::isValidChainId($chainId)) {
+            throw new ProtocolConfigException('Invalid chain identifier');
+        }
+
+        $this->chainId = $chainId;
+
         // Account Prefix
         $accPrefix = $args["accountsPrefix"];
         if (!is_int($accPrefix) || $accPrefix < 0x00 || $accPrefix > 0xff) {

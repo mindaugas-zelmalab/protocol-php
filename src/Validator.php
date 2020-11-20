@@ -13,6 +13,48 @@ use Comely\DataTypes\Buffer\Binary;
 class Validator
 {
     /**
+     * @param $timeStamp
+     * @return bool
+     */
+    public static function isValidEpoch($timeStamp): bool
+    {
+        if (is_int($timeStamp)) {
+            if ($timeStamp > 0 && $timeStamp < 0xffffffff) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $memo
+     * @return string
+     */
+    public static function validatedMemo($memo): string
+    {
+        if (!is_string($memo)) {
+            throw new \InvalidArgumentException('Invalid transaction memo');
+        }
+
+        $memo = trim($memo);
+        if ($memo === "") {
+            return ""; // Empty memos are valid
+        }
+
+        $memoLen = strlen($memo);
+        if ($memoLen > Protocol::MAX_TX_MEMO_LEN) {
+            throw new \LengthException(sprintf('Memo cannot exceed length of %d bytes', Protocol::MAX_TX_MEMO_LEN));
+        }
+
+        if (!preg_match('/^[a-z0-9\s\-_.@%:;()\[\]\"\']+$/i', $memo)) {
+            throw new \DomainException('Memo contains an illegal character or invalid format');
+        }
+
+        return $memo;
+    }
+
+    /**
      * @param $pubKey
      * @param bool|null $compressed
      */

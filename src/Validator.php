@@ -13,6 +13,24 @@ use Comely\DataTypes\Buffer\Binary;
 class Validator
 {
     /**
+     * @param $chainId
+     * @return bool
+     */
+    public static function isValidChainId($chainId): bool
+    {
+        return is_string($chainId) && preg_match('/^[a-f0-9]{64}$/i', $chainId);
+    }
+
+    /**
+     * @param $assetId
+     * @return bool
+     */
+    public static function isValidAssetId($assetId): bool
+    {
+        return is_string($assetId) && preg_match('/^[a-z][a-z0-9]{1,3}-[a-z]{2}[0-9]$/i', $assetId);
+    }
+
+    /**
      * @param $timeStamp
      * @return bool
      */

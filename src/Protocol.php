@@ -5,6 +5,7 @@ namespace ForwardBlock\Protocol;
 
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
+use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
 
 /**
  * Class Protocol
@@ -23,6 +24,14 @@ class Protocol implements ProtocolConstants
     public function __construct(array $config)
     {
         $this->config = new Config($config);
+    }
+
+    /**
+     * @return Secp256k1
+     */
+    public function secp256k1(): Secp256k1
+    {
+        return Secp256k1::getInstance();
     }
 
     /**

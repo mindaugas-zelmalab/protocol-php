@@ -5,6 +5,7 @@ namespace ForwardBlock\Protocol;
 
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
+use ForwardBlock\Protocol\KeyPair\KeyPairFactory;
 use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
 
 /**
@@ -15,6 +16,8 @@ class Protocol implements ProtocolConstants
 {
     /** @var Config */
     private Config $config;
+    /** @var KeyPairFactory */
+    private KeyPairFactory $kpF;
 
     /**
      * Protocol constructor.
@@ -24,6 +27,7 @@ class Protocol implements ProtocolConstants
     public function __construct(array $config)
     {
         $this->config = new Config($config);
+        $this->kpF = new KeyPairFactory($this);
     }
 
     /**
@@ -40,6 +44,14 @@ class Protocol implements ProtocolConstants
     public function config(): Config
     {
         return $this->config;
+    }
+
+    /**
+     * @return KeyPairFactory
+     */
+    public function keyPair(): KeyPairFactory
+    {
+        return $this->kpF;
     }
 
     /**

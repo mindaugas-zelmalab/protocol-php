@@ -58,18 +58,8 @@ class Protocol implements ProtocolConstants
      * @param Binary $bin
      * @return Binary
      */
-    public static function Hash256(Binary $bin): Binary
+    public function hash256(Binary $bin): Binary
     {
         return $bin->hash()->digest("sha256", 2);
-    }
-
-    /**
-     * @param Binary $bin
-     * @return Binary
-     */
-    public static function Hash160(Binary $bin): Binary
-    {
-        return $bin->hash()->sha256()
-            ->hash()->ripeMd160();
     }
 }

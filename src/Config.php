@@ -45,7 +45,7 @@ class Config
 
         // Fancy Prefix
         $fancy = $args["fancyPrefix"];
-        if (!is_string($fancy) || !preg_match('/[a-z0-9]{0,4}/i', $fancy)) {
+        if (!is_string($fancy) || !preg_match('/^[a-z0-9]{0,4}$/i', $fancy)) {
             throw new ProtocolConfigException('Invalid accounts fancy prefix');
         }
 

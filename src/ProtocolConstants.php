@@ -24,6 +24,8 @@ interface ProtocolConstants
     public const MAX_ARBITRARY_DATA = 0xEA60; // 60KB
     /** @var int Maximum size of a block */
     public const MAX_BLOCK_SIZE = 0x0F4240; // 1MB
+    /** @var int Maximum length of transaction memo */
+    public const MAX_TX_MEMO_LEN = 16; // 16 bytes
     /** @var int ECC curve Secp256k1 */
     public const ECDSA_CURVE = Curves::SECP256K1;
 }

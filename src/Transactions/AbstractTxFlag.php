@@ -92,7 +92,8 @@ abstract class AbstractTxFlag
     abstract public function create(): AbstractTxConstructor;
 
     /**
+     * @param Transaction $tx
      * @return AbstractTxReceipt
      */
-    abstract public function receipt(): AbstractTxReceipt;
+    abstract public function receipt(Transaction $tx): AbstractTxReceipt;
 }

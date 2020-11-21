@@ -92,6 +92,7 @@ class TxFlags
      */
     public function getWithName(string $name): AbstractTxFlag
     {
+        $name = strtoupper($name);
         if (!$this->hasName($name)) {
             throw new \InvalidArgumentException(sprintf('Cannot find "%s" TxFlag', $name));
         }

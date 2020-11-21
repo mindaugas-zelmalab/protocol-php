@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\Transactions;
 
 use ForwardBlock\Protocol\Protocol;
-use ForwardBlock\Protocol\Transactions\Receipts\AbstractTxReceipt;
 use ForwardBlock\Protocol\Validator;
 
 /**

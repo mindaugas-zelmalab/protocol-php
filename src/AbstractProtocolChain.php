@@ -7,7 +7,6 @@ use Comely\DataTypes\Buffer\Binary;
 use Comely\Utils\OOP\OOP;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 use ForwardBlock\Protocol\KeyPair\KeyPairFactory;
-use ForwardBlock\Protocol\Transactions\AbstractTxFactory;
 use ForwardBlock\Protocol\Transactions\TxFlags;
 use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
 
@@ -23,8 +22,6 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     protected KeyPairFactory $kpF;
     /** @var TxFlags */
     protected TxFlags $txFlags;
-    /** @var AbstractTxFactory */
-    protected AbstractTxFactory $txFactory;
 
     /**
      * Protocol constructor.
@@ -39,20 +36,12 @@ abstract class AbstractProtocolChain implements ProtocolConstants
 
         // Register TX flags
         $this->registerTxFlags($this->txFlags);
-
-        // Create Tx Factory
-        $this->txFactory = $this->createTxFactory();
     }
 
     /**
      * @param TxFlags $flags
      */
     abstract protected function registerTxFlags(TxFlags $flags): void;
-
-    /**
-     * @return AbstractTxFactory
-     */
-    abstract protected function createTxFactory(): AbstractTxFactory;
 
     /**
      * @return string

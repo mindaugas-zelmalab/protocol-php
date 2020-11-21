@@ -17,15 +17,15 @@ abstract class AbstractTxReceipt
     /** @var Transaction */
     protected Transaction $tx;
 
-    /** @var int */
-    protected int $status;
+    /** @var int|null */
+    protected ?int $status = null;
     /** @var Binary */
     protected Binary $data;
     /** @var array */
     protected array $ledgerEntries;
 
     /**
-     * TxReceiptGenerator constructor.
+     * AbstractTxReceipt constructor.
      * @param AbstractProtocolChain $p
      * @param Transaction $tx
      */
@@ -33,10 +33,12 @@ abstract class AbstractTxReceipt
     {
         $this->p = $p;
         $this->tx = $tx;
+        $this->data = new Binary();
+        $this->ledgerEntries = [];
     }
 
     /**
-     * @return void
+     * @param int $blockHeight
      */
-    abstract protected function generateLedgerEntries(): void;
+    abstract public function generateLedgerEntries(int $blockHeight): void;
 }

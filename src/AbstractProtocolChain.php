@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol;
 
 use Comely\DataTypes\Buffer\Binary;
+use Comely\Utils\OOP\OOP;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 use ForwardBlock\Protocol\KeyPair\KeyPairFactory;
 use ForwardBlock\Protocol\Transactions\AbstractTxFactory;
@@ -52,6 +53,14 @@ abstract class AbstractProtocolChain implements ProtocolConstants
      * @return AbstractTxFactory
      */
     abstract protected function createTxFactory(): AbstractTxFactory;
+
+    /**
+     * @return string
+     */
+    public function chainName(): string
+    {
+        return OOP::baseClassName(get_called_class());
+    }
 
     /**
      * @return TxFlags

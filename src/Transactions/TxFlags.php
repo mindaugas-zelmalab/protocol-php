@@ -46,7 +46,7 @@ class TxFlags
         }
 
         $this->flags[$flag->id()] = $flag;
-        $this->namesMap[$flag->id()] = $flag;
+        $this->namesMap[$flag->name()] = $flag;
         $this->count++;
         return $this;
     }

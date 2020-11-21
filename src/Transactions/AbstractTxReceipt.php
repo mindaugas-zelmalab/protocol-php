@@ -36,6 +36,9 @@ abstract class AbstractTxReceipt
         $this->tx = $tx;
         $this->data = new Binary();
         $this->ledgerEntries = [];
+
+        // Call generateLedgerEntries
+        $this->generateLedgerEntries();
     }
 
     /**
@@ -47,9 +50,9 @@ abstract class AbstractTxReceipt
     }
 
     /**
-     * @param int $blockHeight
+     * @return void
      */
-    abstract public function generateLedgerEntries(int $blockHeight): void;
+    abstract protected function generateLedgerEntries(): void;
 
     /**
      * @param string $hash160

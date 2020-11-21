@@ -8,7 +8,7 @@ use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\Base58Check;
 use ForwardBlock\Protocol\Exception\KeyPairException;
 use ForwardBlock\Protocol\Math\UInts;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use FurqanSiddiqui\BIP32\ECDSA\Curves;
 use FurqanSiddiqui\BIP32\Extend\PrivateKeyInterface;
 use FurqanSiddiqui\ECDSA\ECC\EllipticCurveInterface;
@@ -19,8 +19,8 @@ use FurqanSiddiqui\ECDSA\ECC\EllipticCurveInterface;
  */
 class PublicKey extends \FurqanSiddiqui\BIP32\KeyPair\PublicKey
 {
-    /** @var Protocol */
-    private Protocol $protocol;
+    /** @var AbstractProtocolChain */
+    private AbstractProtocolChain $protocol;
     /** @var string|null */
     private ?string $hash160 = null;
     /** @var string|null */
@@ -28,14 +28,14 @@ class PublicKey extends \FurqanSiddiqui\BIP32\KeyPair\PublicKey
 
     /**
      * PublicKey constructor.
-     * @param Protocol $protocol
+     * @param AbstractProtocolChain $protocol
      * @param PrivateKeyInterface|null $privateKey
      * @param EllipticCurveInterface|null $curve
      * @param Base16|null $publicKey
      * @param bool|null $pubKeyArgIsCompressed
      * @throws \FurqanSiddiqui\BIP32\Exception\PublicKeyException
      */
-    public function __construct(Protocol $protocol, ?PrivateKeyInterface $privateKey, ?EllipticCurveInterface $curve = null, ?Base16 $publicKey = null, ?bool $pubKeyArgIsCompressed = null)
+    public function __construct(AbstractProtocolChain $protocol, ?PrivateKeyInterface $privateKey, ?EllipticCurveInterface $curve = null, ?Base16 $publicKey = null, ?bool $pubKeyArgIsCompressed = null)
     {
         $this->protocol = $protocol;
         parent::__construct($privateKey, $curve, $publicKey, $pubKeyArgIsCompressed);
@@ -43,24 +43,24 @@ class PublicKey extends \FurqanSiddiqui\BIP32\KeyPair\PublicKey
 
 
     /**
-     * @param Protocol $protocol
+     * @param AbstractProtocolChain $protocol
      * @param PrivateKey $pK
      * @return static
      * @throws \FurqanSiddiqui\BIP32\Exception\PublicKeyException
      */
-    public static function fromPrivateKey(Protocol $protocol, PrivateKey $pK): self
+    public static function fromPrivateKey(AbstractProtocolChain $protocol, PrivateKey $pK): self
     {
         return new self($protocol, $pK);
     }
 
     /**
-     * @param Protocol $protocol
+     * @param AbstractProtocolChain $protocol
      * @param Binary $pub
      * @return static
      * @throws KeyPairException
      * @throws \FurqanSiddiqui\BIP32\Exception\PublicKeyException
      */
-    public static function fromPublicKey(Protocol $protocol, Binary $pub): self
+    public static function fromPublicKey(AbstractProtocolChain $protocol, Binary $pub): self
     {
         $prefix = $pub->value(0, 1);
         if (!in_array($prefix, ["\x02", "\x03", "\x04"])) {
@@ -68,7 +68,7 @@ class PublicKey extends \FurqanSiddiqui\BIP32\KeyPair\PublicKey
         }
 
         $isCompressed = $prefix === "\x04" ? false : true;
-        return new self($protocol, null, Curves::getInstanceOf(Protocol::ECDSA_CURVE), $pub->base16(), $isCompressed);
+        return new self($protocol, null, Curves::getInstanceOf(AbstractProtocolChain::ECDSA_CURVE), $pub->base16(), $isCompressed);
     }
 
     /**

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\KeyPair;
 
 use Comely\DataTypes\Buffer\Base16;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use FurqanSiddiqui\BIP32\Extend\ExtendedKeyInterface;
 
 /**
@@ -13,20 +13,20 @@ use FurqanSiddiqui\BIP32\Extend\ExtendedKeyInterface;
  */
 class PrivateKey extends \FurqanSiddiqui\BIP32\KeyPair\PrivateKey
 {
-    /** @var Protocol */
-    private Protocol $protocol;
+    /** @var AbstractProtocolChain */
+    private AbstractProtocolChain $protocol;
 
     /**
      * PrivateKey constructor.
-     * @param Protocol $protocol
+     * @param AbstractProtocolChain $protocol
      * @param Base16 $entropy
      * @param ExtendedKeyInterface|null $extendedKey
      */
-    public function __construct(Protocol $protocol, Base16 $entropy, ?ExtendedKeyInterface $extendedKey = null)
+    public function __construct(AbstractProtocolChain $protocol, Base16 $entropy, ?ExtendedKeyInterface $extendedKey = null)
     {
         $this->protocol = $protocol;
         parent::__construct($entropy, $extendedKey);
-        $this->set("curve", Protocol::ECDSA_CURVE);
+        $this->set("curve", AbstractProtocolChain::ECDSA_CURVE);
     }
 
     /**

@@ -5,7 +5,7 @@ namespace ForwardBlock\Protocol\Transactions\Traits;
 
 use ForwardBlock\Protocol\Exception\TxConstructException;
 use ForwardBlock\Protocol\Math\UInts;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -37,7 +37,7 @@ trait TransferObjectsTrait
             throw TxConstructException::Prop("transferObject.value", "Invalid transfer amount");
         }
 
-        if (count($this->transfers) >= Protocol::MAX_TRANSFERS_PER_TX) {
+        if (count($this->transfers) >= AbstractProtocolChain::MAX_TRANSFERS_PER_TX) {
             throw new TxConstructException('Transaction cannot have more then 10 asset transfers');
         }
 

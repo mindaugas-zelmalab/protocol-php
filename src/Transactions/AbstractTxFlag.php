@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions;
 
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -12,8 +12,8 @@ use ForwardBlock\Protocol\Validator;
  */
 abstract class AbstractTxFlag
 {
-    /** @var Protocol */
-    protected Protocol $p;
+    /** @var AbstractProtocolChain */
+    protected AbstractProtocolChain $p;
     /** @var int */
     protected int $id;
     /** @var string */
@@ -23,12 +23,12 @@ abstract class AbstractTxFlag
 
     /**
      * AbstractTxFlag constructor.
-     * @param Protocol $p
+     * @param AbstractProtocolChain $p
      * @param int $id
      * @param string $name
      * @param bool $status
      */
-    public function __construct(Protocol $p, int $id, string $name, bool $status)
+    public function __construct(AbstractProtocolChain $p, int $id, string $name, bool $status)
     {
         if ($id < 0 || $id > 0xffff) {
             throw new \OutOfRangeException('Invalid flag ID/decimal');

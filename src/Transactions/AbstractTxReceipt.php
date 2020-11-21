@@ -4,39 +4,39 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\Transactions;
 
 use Comely\DataTypes\Buffer\Binary;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 
 /**
  * Class AbstractTxReceipt
  * @package ForwardBlock\Protocol\Transactions
  */
-class AbstractTxReceipt
+abstract class AbstractTxReceipt
 {
-    /** @var Protocol */
-    private Protocol $p;
+    /** @var AbstractProtocolChain */
+    protected AbstractProtocolChain $p;
     /** @var Transaction */
-    private Transaction $tx;
+    protected Transaction $tx;
 
     /** @var int */
-    private int $status;
+    protected int $status;
     /** @var Binary */
-    private Binary $data;
+    protected Binary $data;
     /** @var array */
-    private array $ledgerEntries;
+    protected array $ledgerEntries;
 
     /**
      * TxReceiptGenerator constructor.
-     * @param Protocol $p
+     * @param AbstractProtocolChain $p
      * @param Transaction $tx
      */
-    public function __construct(Protocol $p, Transaction $tx)
+    public function __construct(AbstractProtocolChain $p, Transaction $tx)
     {
         $this->p = $p;
         $this->tx = $tx;
     }
 
-    private function generateLedgerEntries(): void
-    {
-
-    }
+    /**
+     * @return void
+     */
+    abstract protected function generateLedgerEntries(): void;
 }

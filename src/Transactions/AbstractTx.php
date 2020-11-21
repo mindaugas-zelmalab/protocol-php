@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\Transactions;
 
 use Comely\DataTypes\Buffer\Binary;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 
 /**
  * Class AbstractTx
@@ -12,8 +12,8 @@ use ForwardBlock\Protocol\Protocol;
  */
 abstract class AbstractTx
 {
-    /** @var Protocol */
-    protected Protocol $protocol;
+    /** @var AbstractProtocolChain */
+    protected AbstractProtocolChain $protocol;
 
     /** @var int */
     protected int $version;

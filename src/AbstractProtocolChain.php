@@ -10,17 +10,17 @@ use ForwardBlock\Protocol\Transactions\TxFlags;
 use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
 
 /**
- * Class Protocol
+ * Class AbstractProtocolChain
  * @package ForwardBlock\Protocol
  */
-class Protocol implements ProtocolConstants
+abstract class AbstractProtocolChain implements ProtocolConstants
 {
     /** @var Config */
     protected Config $config;
     /** @var KeyPairFactory */
     protected KeyPairFactory $kpF;
-    /** @var TxFlags|null */
-    protected ?TxFlags $txFlags = null;
+    /** @var TxFlags */
+    protected TxFlags $txFlags;
 
     /**
      * Protocol constructor.
@@ -31,17 +31,24 @@ class Protocol implements ProtocolConstants
     {
         $this->config = new Config($config);
         $this->kpF = new KeyPairFactory($this);
+        $this->txFlags = new TxFlags($this);
+
+        // Register TX flags
+        $this->registerTxFlags($this->txFlags);
+
+        // Create Tx Factory
     }
+
+    /**
+     * @param TxFlags $flags
+     */
+    abstract protected function registerTxFlags(TxFlags $flags): void;
 
     /**
      * @return TxFlags
      */
     public function txFlags(): TxFlags
     {
-        if (!$this->txFlags) {
-            $this->txFlags = new TxFlags($this);
-        }
-
         return $this->txFlags;
     }
 

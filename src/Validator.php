@@ -70,8 +70,8 @@ class Validator
         }
 
         $memoLen = strlen($memo);
-        if ($memoLen > Protocol::MAX_TX_MEMO_LEN) {
-            throw new \LengthException(sprintf('Memo cannot exceed length of %d bytes', Protocol::MAX_TX_MEMO_LEN));
+        if ($memoLen > ProtocolConstants::MAX_TX_MEMO_LEN) {
+            throw new \LengthException(sprintf('Memo cannot exceed length of %d bytes', ProtocolConstants::MAX_TX_MEMO_LEN));
         }
 
         if (!preg_match('/^[a-z0-9\s\-_.@%:;()\[\]\"\']+$/i', $memo)) {

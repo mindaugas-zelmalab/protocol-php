@@ -10,7 +10,7 @@ use ForwardBlock\Protocol\KeyPair\PrivateKey;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\KeyPair\PublicKey;
 use ForwardBlock\Protocol\Math\UInts;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -28,11 +28,11 @@ abstract class AbstractTxConstructor extends AbstractTx
 
     /**
      * AbstractTxConstructor constructor.
-     * @param Protocol $protocol
+     * @param AbstractProtocolChain $protocol
      * @param int $v
      * @param AbstractTxFlag $flag
      */
-    protected function __construct(Protocol $protocol, int $v, AbstractTxFlag $flag)
+    protected function __construct(AbstractProtocolChain $protocol, int $v, AbstractTxFlag $flag)
     {
         $this->protocol = $protocol;
         $this->version = $v;
@@ -209,11 +209,11 @@ abstract class AbstractTxConstructor extends AbstractTx
 
         // Step 8
         if ($this->data && $this->data->sizeInBytes) {
-            if ($this->data->sizeInBytes > Protocol::MAX_ARBITRARY_DATA) {
+            if ($this->data->sizeInBytes > AbstractProtocolChain::MAX_ARBITRARY_DATA) {
                 throw new TxEncodeException(sprintf(
                     'Transaction arbitrary data of size %d bytes exceeds limit of %d bytes',
                     $this->data->sizeInBytes,
-                    Protocol::MAX_ARBITRARY_DATA
+                    AbstractProtocolChain::MAX_ARBITRARY_DATA
                 ));
             }
 

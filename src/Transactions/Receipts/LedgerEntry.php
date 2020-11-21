@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions\Receipts;
 
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Transactions\AbstractTxReceipt;
 
 /**
@@ -12,23 +12,23 @@ use ForwardBlock\Protocol\Transactions\AbstractTxReceipt;
  */
 class LedgerEntry
 {
-    /** @var Protocol */
-    private Protocol $p;
+    /** @var AbstractProtocolChain */
+    protected AbstractProtocolChain $p;
     /** @var AbstractTxReceipt */
-    private AbstractTxReceipt $txR;
+    protected AbstractTxReceipt $txR;
 
     /** @var string */
-    private string $hash160;
+    protected string $hash160;
     /** @var int */
-    private int $flag;
+    protected int $flag;
     /** @var int */
-    private int $amount;
+    protected int $amount;
     /** @var string|null */
-    private ?string $asset = null;
+    protected ?string $asset = null;
     /** @var bool */
-    private bool $appliedSuccess = false;
+    protected bool $appliedSuccess = false;
 
-    public function __construct(Protocol $p, AbstractTxReceipt $txR)
+    public function __construct(AbstractProtocolChain $p, AbstractTxReceipt $txR)
     {
         $this->p = $p;
         $this->txR = $txR;

@@ -7,7 +7,7 @@ use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\Exception\TxDecodeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\Math\UInts;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -33,11 +33,11 @@ class Transaction extends AbstractTx
      */
     private function __construct(Binary $encoded)
     {
-        if ($encoded->sizeInBytes > Protocol::MAX_TRANSACTION_SIZE) {
+        if ($encoded->sizeInBytes > AbstractProtocolChain::MAX_TRANSACTION_SIZE) {
             throw new TxDecodeException(sprintf(
                 'Encoded transaction of %d bytes exceeds limit of %d bytes per transaction',
                 $encoded->sizeInBytes,
-                Protocol::MAX_TRANSACTION_SIZE
+                AbstractProtocolChain::MAX_TRANSACTION_SIZE
             ));
         }
 
@@ -97,9 +97,9 @@ class Transaction extends AbstractTx
         // Step 6
         $memoLen = UInts::Decode_UInt1LE($read->next(1));
         if ($memoLen > 0) {
-            if ($memoLen > Protocol::MAX_TX_MEMO_LEN) {
+            if ($memoLen > AbstractProtocolChain::MAX_TX_MEMO_LEN) {
                 throw new TxDecodeException(
-                    sprintf('Transaction memo of %d bytes exceeds max size of %d bytes', $memoLen, Protocol::MAX_TX_MEMO_LEN)
+                    sprintf('Transaction memo of %d bytes exceeds max size of %d bytes', $memoLen, AbstractProtocolChain::MAX_TX_MEMO_LEN)
                 );
             }
 
@@ -114,9 +114,9 @@ class Transaction extends AbstractTx
 
         // Step 7
         $transfers = UInts::Decode_UInt1LE($read->next(1));
-        if ($transfers > Protocol::MAX_TRANSFERS_PER_TX) {
+        if ($transfers > AbstractProtocolChain::MAX_TRANSFERS_PER_TX) {
             throw new TxDecodeException(
-                sprintf('Transaction cannot contain more than %d transfers', Protocol::MAX_TRANSFERS_PER_TX)
+                sprintf('Transaction cannot contain more than %d transfers', AbstractProtocolChain::MAX_TRANSFERS_PER_TX)
             );
         }
 
@@ -148,11 +148,11 @@ class Transaction extends AbstractTx
         // Step 8
         $dataLen = UInts::Decode_UInt2LE($read->next(2));
         if ($dataLen > 0) {
-            if ($dataLen > Protocol::MAX_ARBITRARY_DATA) {
+            if ($dataLen > AbstractProtocolChain::MAX_ARBITRARY_DATA) {
                 throw new TxDecodeException(sprintf(
                     'Arbitrary data of %d bytes exceeds limit of %d bytes',
                     $dataLen,
-                    Protocol::MAX_ARBITRARY_DATA
+                    AbstractProtocolChain::MAX_ARBITRARY_DATA
                 ));
             }
 

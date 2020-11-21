@@ -5,7 +5,7 @@ namespace ForwardBlock\Protocol\KeyPair;
 
 use Comely\DataTypes\Buffer\Base16;
 use ForwardBlock\Protocol\Exception\KeyPairException;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -14,14 +14,14 @@ use ForwardBlock\Protocol\Validator;
  */
 class KeyPairFactory
 {
-    /** @var Protocol */
-    private Protocol $protocol;
+    /** @var AbstractProtocolChain */
+    private AbstractProtocolChain $protocol;
 
     /**
      * KeyPairFactory constructor.
-     * @param Protocol $protocol
+     * @param AbstractProtocolChain $protocol
      */
-    public function __construct(Protocol $protocol)
+    public function __construct(AbstractProtocolChain $protocol)
     {
         $this->protocol = $protocol;
     }

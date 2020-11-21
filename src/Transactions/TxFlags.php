@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\Transactions;
 
 use ForwardBlock\Protocol\Math\UInts;
-use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -13,8 +13,8 @@ use ForwardBlock\Protocol\Validator;
  */
 class TxFlags
 {
-    /** @var Protocol */
-    private Protocol $p;
+    /** @var AbstractProtocolChain */
+    private AbstractProtocolChain $p;
     /** @var array */
     private array $flags = [];
     /** @var array */
@@ -24,9 +24,9 @@ class TxFlags
 
     /**
      * TxFlags constructor.
-     * @param Protocol $p
+     * @param AbstractProtocolChain $p
      */
-    public function __construct(Protocol $p)
+    public function __construct(AbstractProtocolChain $p)
     {
         $this->p = $p;
     }

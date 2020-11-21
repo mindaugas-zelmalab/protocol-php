@@ -50,6 +50,40 @@ abstract class AbstractTxReceipt
     }
 
     /**
+     * @return Binary
+     */
+    public function data(): Binary
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param int $code
+     * @return $this
+     */
+    public function setStatus(int $code): self
+    {
+        $this->status = $code;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function status(): int
+    {
+        return $this->status ?? -1;
+    }
+
+    /**
+     * @return array
+     */
+    public function ledgerEntries(): array
+    {
+        return $this->ledgerEntries;
+    }
+
+    /**
      * @return void
      */
     abstract protected function generateLedgerEntries(): void;
@@ -59,10 +93,9 @@ abstract class AbstractTxReceipt
      * @param int $flag
      * @param int $amount
      * @param string|null $assetId
-     * @return LedgerEntry
      */
-    protected function createLedgerEntry(string $hash160, int $flag, int $amount, ?string $assetId = null): LedgerEntry
+    protected function createLedgerEntry(string $hash160, int $flag, int $amount, ?string $assetId = null): void
     {
-        return new LedgerEntry($this->p, $this, $hash160, $flag, $amount, $assetId);
+        $this->ledgerEntries[] = new LedgerEntry($this->p, $this, $hash160, $flag, $amount, $assetId);
     }
 }

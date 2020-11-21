@@ -23,18 +23,21 @@ abstract class AbstractTxConstructor extends AbstractTx
     protected ?PublicKey $senderPubKey = null;
     /** @var PublicKey|null */
     protected ?PublicKey $recipientPubKey = null;
+    /** @var AbstractTxFlag */
+    protected AbstractTxFlag $txFlag;
 
     /**
-     * AbstractTx constructor.
+     * AbstractTxConstructor constructor.
      * @param Protocol $protocol
      * @param int $v
-     * @param int $flag
+     * @param AbstractTxFlag $flag
      */
-    protected function __construct(Protocol $protocol, int $v, int $flag)
+    protected function __construct(Protocol $protocol, int $v, AbstractTxFlag $flag)
     {
         $this->protocol = $protocol;
         $this->version = $v;
-        $this->flag = $flag;
+        $this->txFlag = $flag;
+        $this->flag = $flag->id();
         $this->timeStamp = time();
     }
 

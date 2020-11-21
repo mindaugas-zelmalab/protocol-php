@@ -3,24 +3,102 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions;
 
+use ForwardBlock\Protocol\Exception\UnknownTxFlagException;
+use ForwardBlock\Protocol\Math\UInts;
+use ForwardBlock\Protocol\Protocol;
+use ForwardBlock\Protocol\Validator;
+
 /**
- * Interface TxFlags
+ * Class TxFlags
  * @package ForwardBlock\Protocol\Transactions
  */
-interface TxFlags
+class TxFlags
 {
+    /** @var Protocol */
+    private Protocol $p;
+    /** @var array */
+    private array $flags = [];
+    /** @var array */
+    private array $namesMap = [];
     /** @var int */
-    public const FORGE = 0x0a;
-    /** @var int */
-    public const REGISTER = 0x64;
-    /** @var int */
-    public const TRANSFER = 0xc8;
-    /** @var int */
-    public const BURN = 0xc9;
-    /** @var int */
-    public const ACCOUNT_LOCK = 0x0190;
-    /** @var int */
-    public const ACCOUNT_UNLOCK = 0x0191;
-    /** @var int */
-    public const ACCOUNT_UPGRADE = 0x0192;
+    private int $count = 0;
+
+    /**
+     * TxFlags constructor.
+     * @param Protocol $p
+     */
+    public function __construct(Protocol $p)
+    {
+        $this->p = $p;
+    }
+
+    /**
+     * @param AbstractTxFlag $flag
+     * @return $this
+     */
+    public function append(AbstractTxFlag $flag): self
+    {
+        if ($this->has($flag->id())) {
+            throw new \InvalidArgumentException(sprintf('Tx Flag "0x%s" is already registered', UInts::Encode_UInt1LE($flag->id())));
+        }
+
+        if ($this->hasName($flag->name())) {
+            throw new \InvalidArgumentException(sprintf('Tx Flag "%s" is already registered', $flag->name()));
+        }
+
+        $this->flags[$flag->id()] = $flag;
+        $this->namesMap[$flag->id()] = $flag;
+        $this->count++;
+        return $this;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function has(int $id): bool
+    {
+        return isset($this->flags[$id]);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasName(string $name): bool
+    {
+        if (!Validator::isValidTxFlagName($name)) {
+            throw new \InvalidArgumentException('Invalid tx flag name to search');
+        }
+
+        return isset($this->namesMap[strtoupper($name)]);
+    }
+
+    /**
+     * @param int $id
+     * @return AbstractTxFlag
+     * @throws UnknownTxFlagException
+     */
+    public function get(int $id): AbstractTxFlag
+    {
+        if (!$this->has($id)) {
+            throw new UnknownTxFlagException(sprintf('Cannot find TxFlag with ID %d (0x%s)', $id, UInts::Encode_UInt1LE($id)));
+        }
+
+        return $this->flags[$id];
+    }
+
+    /**
+     * @param string $name
+     * @return AbstractTxFlag
+     * @throws UnknownTxFlagException
+     */
+    public function getWithName(string $name): AbstractTxFlag
+    {
+        if (!$this->hasName($name)) {
+            throw new UnknownTxFlagException(sprintf('Cannot find "%s" TxFlag', $name));
+        }
+
+        return $this->namesMap[$name];
+    }
 }

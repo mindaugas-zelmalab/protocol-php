@@ -6,6 +6,7 @@ namespace ForwardBlock\Protocol;
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 use ForwardBlock\Protocol\KeyPair\KeyPairFactory;
+use ForwardBlock\Protocol\Transactions\TxFlags;
 use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
 
 /**
@@ -15,9 +16,11 @@ use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
 class Protocol implements ProtocolConstants
 {
     /** @var Config */
-    private Config $config;
+    protected Config $config;
     /** @var KeyPairFactory */
-    private KeyPairFactory $kpF;
+    protected KeyPairFactory $kpF;
+    /** @var TxFlags|null */
+    protected ?TxFlags $txFlags = null;
 
     /**
      * Protocol constructor.
@@ -28,6 +31,18 @@ class Protocol implements ProtocolConstants
     {
         $this->config = new Config($config);
         $this->kpF = new KeyPairFactory($this);
+    }
+
+    /**
+     * @return TxFlags
+     */
+    public function txFlags(): TxFlags
+    {
+        if (!$this->txFlags) {
+            $this->txFlags = new TxFlags($this);
+        }
+
+        return $this->txFlags;
     }
 
     /**

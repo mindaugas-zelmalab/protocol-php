@@ -13,6 +13,15 @@ use Comely\DataTypes\Buffer\Binary;
 class Validator
 {
     /**
+     * @param $name
+     * @return bool
+     */
+    public static function isValidTxFlagName($name): bool
+    {
+        return is_string($name) && preg_match('/^[a-z][a-z0-9]+(_[a-z0-9]+)*$/i', $name);
+    }
+
+    /**
      * @param $chainId
      * @return bool
      */

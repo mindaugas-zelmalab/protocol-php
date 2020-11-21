@@ -12,7 +12,7 @@ use ForwardBlock\Protocol\AbstractProtocolChain;
 abstract class AbstractTxFactory
 {
     /** @var AbstractProtocolChain */
-    private AbstractProtocolChain $p;
+    protected AbstractProtocolChain $p;
 
     /**
      * AbstractTxFactory constructor.

@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\KeyPair;
 
 use Comely\DataTypes\Buffer\Base16;
+use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\Exception\KeyPairException;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Validator;
+use FurqanSiddiqui\BIP39\Mnemonic;
 
 /**
  * Class KeyPairFactory
@@ -53,5 +55,21 @@ class KeyPairFactory
         }
 
         return new PrivateKey($this->protocol, $prv);
+    }
+
+    /**
+     * @param Mnemonic $m
+     * @param string|null $seedPassphrase
+     * @return PrivateKey
+     * @throws KeyPairException
+     */
+    public function privateKeyFromMnemonic(Mnemonic $m, ?string $seedPassphrase = null): PrivateKey
+    {
+        $entropy = new Base16($m->entropy);
+        if ($seedPassphrase) {
+            $entropy = (new Binary($m->generateSeed($seedPassphrase, 32)))->base16();
+        }
+
+        return $this->privateKeyFromEntropy($entropy);
     }
 }

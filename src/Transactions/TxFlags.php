@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions;
 
-use ForwardBlock\Protocol\Exception\UnknownTxFlagException;
 use ForwardBlock\Protocol\Math\UInts;
 use ForwardBlock\Protocol\Protocol;
 use ForwardBlock\Protocol\Validator;
@@ -77,12 +76,11 @@ class TxFlags
     /**
      * @param int $id
      * @return AbstractTxFlag
-     * @throws UnknownTxFlagException
      */
     public function get(int $id): AbstractTxFlag
     {
         if (!$this->has($id)) {
-            throw new UnknownTxFlagException(sprintf('Cannot find TxFlag with ID %d (0x%s)', $id, UInts::Encode_UInt1LE($id)));
+            throw new \InvalidArgumentException(sprintf('Cannot find TxFlag with ID %d (0x%s)', $id, UInts::Encode_UInt1LE($id)));
         }
 
         return $this->flags[$id];
@@ -91,12 +89,11 @@ class TxFlags
     /**
      * @param string $name
      * @return AbstractTxFlag
-     * @throws UnknownTxFlagException
      */
     public function getWithName(string $name): AbstractTxFlag
     {
         if (!$this->hasName($name)) {
-            throw new UnknownTxFlagException(sprintf('Cannot find "%s" TxFlag', $name));
+            throw new \InvalidArgumentException(sprintf('Cannot find "%s" TxFlag', $name));
         }
 
         return $this->namesMap[$name];

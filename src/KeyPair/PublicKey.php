@@ -20,7 +20,7 @@ use FurqanSiddiqui\ECDSA\ECC\EllipticCurveInterface;
 class PublicKey extends \FurqanSiddiqui\BIP32\KeyPair\PublicKey
 {
     /** @var AbstractProtocolChain */
-    private AbstractProtocolChain $protocol;
+    protected AbstractProtocolChain $protocol;
     /** @var string|null */
     private ?string $hash160 = null;
     /** @var string|null */

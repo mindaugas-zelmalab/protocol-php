@@ -14,7 +14,7 @@ use FurqanSiddiqui\BIP32\Extend\ExtendedKeyInterface;
 class PrivateKey extends \FurqanSiddiqui\BIP32\KeyPair\PrivateKey
 {
     /** @var AbstractProtocolChain */
-    private AbstractProtocolChain $protocol;
+    protected AbstractProtocolChain $protocol;
 
     /**
      * PrivateKey constructor.

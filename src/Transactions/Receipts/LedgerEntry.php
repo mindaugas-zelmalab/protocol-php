@@ -58,6 +58,14 @@ class LedgerEntry
     }
 
     /**
+     * @return AbstractTxReceipt
+     */
+    public function getReceipt(): AbstractTxReceipt
+    {
+        return $this->txR;
+    }
+
+    /**
      * @return void
      */
     public function markApplied(): void

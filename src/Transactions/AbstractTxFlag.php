@@ -87,9 +87,10 @@ abstract class AbstractTxFlag
     }
 
     /**
+     * @param array $args
      * @return AbstractTxConstructor
      */
-    abstract public function create(): AbstractTxConstructor;
+    abstract public function create(array $args): AbstractTxConstructor;
 
     /**
      * @param Transaction $tx

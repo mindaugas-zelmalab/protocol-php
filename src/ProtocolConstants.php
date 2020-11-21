@@ -30,4 +30,7 @@ interface ProtocolConstants
     public const MAX_TRANSFERS_PER_TX = 10; // 10 transfer objects
     /** @var int ECC curve Secp256k1 */
     public const ECDSA_CURVE = Curves::SECP256K1;
+
+    /** @var int Genesis transaction flag */
+    public const GENESIS_TX_FLAG = 0x01;
 }

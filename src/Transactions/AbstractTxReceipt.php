@@ -29,8 +29,9 @@ abstract class AbstractTxReceipt
      * AbstractTxReceipt constructor.
      * @param AbstractProtocolChain $p
      * @param Transaction $tx
+     * @param int $blockHeightContext
      */
-    public function __construct(AbstractProtocolChain $p, Transaction $tx)
+    public function __construct(AbstractProtocolChain $p, Transaction $tx, int $blockHeightContext)
     {
         $this->p = $p;
         $this->tx = $tx;
@@ -38,7 +39,7 @@ abstract class AbstractTxReceipt
         $this->ledgerEntries = [];
 
         // Call generateLedgerEntries
-        $this->generateLedgerEntries();
+        $this->generateLedgerEntries($blockHeightContext);
     }
 
     /**
@@ -84,9 +85,9 @@ abstract class AbstractTxReceipt
     }
 
     /**
-     * @return void
+     * @param int $blockHeightContext
      */
-    abstract protected function generateLedgerEntries(): void;
+    abstract protected function generateLedgerEntries(int $blockHeightContext): void;
 
     /**
      * @param string $hash160

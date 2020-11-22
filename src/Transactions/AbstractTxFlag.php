@@ -94,7 +94,8 @@ abstract class AbstractTxFlag
 
     /**
      * @param Transaction $tx
+     * @param int $blockHeightContext
      * @return AbstractTxReceipt
      */
-    abstract public function receipt(Transaction $tx): AbstractTxReceipt;
+    abstract public function receipt(Transaction $tx, int $blockHeightContext): AbstractTxReceipt;
 }

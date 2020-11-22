@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions;
 
+use Comely\DataTypes\Buffer\Base16;
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\Exception\TxDecodeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
@@ -170,7 +171,7 @@ class Transaction extends AbstractTx
                 $signR = $read->next(32);
                 $signS = $read->next(32);
                 $signV = UInts::Decode_UInt1LE($read->next(1));
-                $sign = new Signature(new Binary($signR), new Binary($signS), $signV);
+                $sign = new Signature(new Base16(bin2hex($signR)), new Base16(bin2hex($signS)), $signV);
             } catch (\Exception $e) {
                 throw new TxDecodeException(sprintf('Error with signature %d; (%s) %s', $i, get_class($e), $e->getMessage()));
             }

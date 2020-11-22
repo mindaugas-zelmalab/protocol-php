@@ -17,32 +17,46 @@ use ForwardBlock\Protocol\Validator;
  */
 class Transaction extends AbstractTx
 {
+    /** @var Binary */
+    private Binary $hash;
+    /** @var Binary */
+    private Binary $raw;
+
     /**
+     * @param AbstractProtocolChain $p
      * @param Binary $encoded
      * @return static
      * @throws TxDecodeException
      */
-    public static function Decode(Binary $encoded): self
+    public static function Decode(AbstractProtocolChain $p, Binary $encoded): self
     {
-        return new self($encoded);
+        return new self($p, $encoded);
     }
 
     /**
      * Transaction constructor.
-     * @param Binary $encoded
+     * @param AbstractProtocolChain $p
+     * @param Binary $bytes
      * @throws TxDecodeException
      */
-    private function __construct(Binary $encoded)
+    private function __construct(AbstractProtocolChain $p, Binary $bytes)
     {
-        if ($encoded->sizeInBytes > AbstractProtocolChain::MAX_TRANSACTION_SIZE) {
+        parent::__construct($p);
+        $this->raw = $bytes;
+
+        if ($bytes->sizeInBytes > AbstractProtocolChain::MAX_TRANSACTION_SIZE) {
             throw new TxDecodeException(sprintf(
                 'Encoded transaction of %d bytes exceeds limit of %d bytes per transaction',
-                $encoded->sizeInBytes,
+                $bytes->sizeInBytes,
                 AbstractProtocolChain::MAX_TRANSACTION_SIZE
             ));
         }
 
-        $read = $encoded->read();
+        // Get Transaction Hash
+        $this->hash = $this->p->hash256($bytes)->readOnly(true);
+
+        // Byte Reading
+        $read = $bytes->read();
         $read->throwUnderflowEx();
 
         // Step 1
@@ -90,10 +104,6 @@ class Transaction extends AbstractTx
         } elseif ($hasRecipient !== "\0") {
             throw new TxDecodeException('Invalid "hasRecipient" flag byte');
         }
-
-//        if (!$this->recipient && !$this->sender) {
-//            throw new TxDecodeException('Transaction has no sender or recipient');
-//        }
 
         // Step 6
         $memoLen = UInts::Decode_UInt1LE($read->next(1));

@@ -5,6 +5,7 @@ namespace ForwardBlock\Protocol\Transactions;
 
 use ForwardBlock\Protocol\Math\UInts;
 use ForwardBlock\Protocol\AbstractProtocolChain;
+use ForwardBlock\Protocol\Transactions\Receipts\LedgerFlags;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -21,6 +22,8 @@ class TxFlags
     private array $namesMap = [];
     /** @var int */
     private int $count = 0;
+    /** @var LedgerFlags */
+    private LedgerFlags $ledgerFlags;
 
     /**
      * TxFlags constructor.
@@ -29,6 +32,7 @@ class TxFlags
     public function __construct(AbstractProtocolChain $p)
     {
         $this->p = $p;
+        $this->ledgerFlags = new LedgerFlags();
     }
 
     /**

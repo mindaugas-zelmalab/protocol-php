@@ -44,7 +44,7 @@ class CheckedTx
 
         // Get Raw Receipt
         try {
-            $this->receipt = $p->txFlags()->get($tx->flag())->receipt($tx, $blockHeightContext);
+            $this->receipt = $p->txFlags()->get($tx->flag())->newReceipt($tx, $blockHeightContext);
         } catch (\Exception $e) {
             if ($p->isDebug()) {
                 trigger_error(sprintf('[%s][%s] %s', get_class($e), $e->getCode(), $e->getMessage()), E_USER_WARNING);

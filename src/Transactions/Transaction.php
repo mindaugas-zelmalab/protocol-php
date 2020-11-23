@@ -176,17 +176,19 @@ class Transaction extends AbstractTx
             throw new TxDecodeException('Transaction cannot have more than 5 signatures');
         }
 
-        for ($i = 1; $i <= $signs; $i++) {
-            try {
-                $signR = $read->next(32);
-                $signS = $read->next(32);
-                $signV = UInts::Decode_UInt1LE($read->next(1));
-                $sign = new Signature(new Base16(bin2hex($signR)), new Base16(bin2hex($signS)), $signV);
-            } catch (\Exception $e) {
-                throw new TxDecodeException(sprintf('Error with signature %d; (%s) %s', $i, get_class($e), $e->getMessage()));
-            }
+        if ($signs > 0) {
+            for ($i = 1; $i <= $signs; $i++) {
+                try {
+                    $signR = $read->next(32);
+                    $signS = $read->next(32);
+                    $signV = UInts::Decode_UInt1LE($read->next(1));
+                    $sign = new Signature(new Base16(bin2hex($signR)), new Base16(bin2hex($signS)), $signV);
+                } catch (\Exception $e) {
+                    throw new TxDecodeException(sprintf('Error with signature %d; (%s) %s', $i, get_class($e), $e->getMessage()));
+                }
 
-            $this->signs[] = $sign;
+                $this->signs[] = $sign;
+            }
         }
 
         // Step 10
@@ -196,6 +198,11 @@ class Transaction extends AbstractTx
         $this->timeStamp = UInts::Decode_UInt4LE($read->next(4));
         if (!Validator::isValidEpoch($this->timeStamp)) {
             throw new TxDecodeException('Invalid timestamp');
+        }
+
+        // Check remaining bytes?
+        if ($read->remaining()) {
+            throw new TxDecodeException('Transaction byte reader has excess bytes');
         }
     }
 

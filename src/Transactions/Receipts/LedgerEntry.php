@@ -43,6 +43,10 @@ class LedgerEntry
         $this->p = $p;
         $this->txR = $txR;
 
+        if (strlen($hash160) !== 20) {
+            throw new \InvalidArgumentException('Hash160 must be 20 raw bytes');
+        }
+
         if ($amount < 0 || $amount > UInts::MAX) {
             throw new \OutOfRangeException('Invalid TxReceipt.ledgerEntry amount');
         }
@@ -107,5 +111,20 @@ class LedgerEntry
     public function isApplied(): bool
     {
         return $this->appliedSuccess;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function serializeRawBytes(): string
+    {
+        $ser = $this->hash160;
+        $ser .= UInts::Encode_UInt2LE($this->flag->dec());
+        $ser .= UInts::Encode_UInt8LE($this->amount);
+        $ser .= str_pad(strval($this->asset), 8, "\0", STR_PAD_LEFT);
+        $ser .= $this->appliedSuccess ? "\1" : "\0";
+
+        return $ser;
     }
 }

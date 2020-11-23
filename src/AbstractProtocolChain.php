@@ -5,6 +5,7 @@ namespace ForwardBlock\Protocol;
 
 use Comely\DataTypes\Buffer\Binary;
 use Comely\Utils\OOP\OOP;
+use ForwardBlock\Protocol\Accounts\AccountsProto;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 use ForwardBlock\Protocol\KeyPair\KeyPairFactory;
 use ForwardBlock\Protocol\Transactions\TxFlags;
@@ -22,6 +23,8 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     protected KeyPairFactory $kpF;
     /** @var TxFlags */
     protected TxFlags $txFlags;
+    /** @var AccountsProto */
+    protected AccountsProto $aP;
 
     /**
      * Protocol constructor.
@@ -33,6 +36,7 @@ abstract class AbstractProtocolChain implements ProtocolConstants
         $this->config = new Config($config);
         $this->kpF = new KeyPairFactory($this);
         $this->txFlags = new TxFlags($this);
+        $this->aP = new AccountsProto($this);
 
         // Register TX flags
         $this->registerTxFlags($this->txFlags);
@@ -81,6 +85,14 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     public function keyPair(): KeyPairFactory
     {
         return $this->kpF;
+    }
+
+    /**
+     * @return AccountsProto
+     */
+    public function accounts(): AccountsProto
+    {
+        return $this->aP;
     }
 
     /**

@@ -17,6 +17,8 @@ use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
  */
 abstract class AbstractProtocolChain implements ProtocolConstants
 {
+    /** @var bool */
+    protected bool $debug = false;
     /** @var Config */
     protected Config $config;
     /** @var KeyPairFactory */
@@ -93,6 +95,24 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     public function accounts(): AccountsProto
     {
         return $this->aP;
+    }
+
+    /**
+     * @param bool $debug
+     * @return $this
+     */
+    public function setDebug(bool $debug): self
+    {
+        $this->debug = $debug;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebug(): bool
+    {
+        return $this->debug;
     }
 
     /**

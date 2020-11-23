@@ -27,7 +27,9 @@ interface ProtocolConstants
     /** @var int Maximum length of transaction memo */
     public const MAX_TX_MEMO_LEN = 32; // 32 bytes
     /** @var int Maximum transfers per transaction to a recipient */
-    public const MAX_TRANSFERS_PER_TX = 10; // 10 transfer objects
+    public const MAX_TRANSFERS_PER_TX = 10; // 10x transfer objects
+    /** @var int Maximum number of LedgerEntry objects in a transaction */
+    public const MAX_LEDGER_ENTRIES = 30; // 30x ledger entries
     /** @var int ECC curve Secp256k1 */
     public const ECDSA_CURVE = Curves::SECP256K1;
 

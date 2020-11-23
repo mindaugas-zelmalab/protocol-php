@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\Transactions\Receipts;
 
 use ForwardBlock\Protocol\Math\UInts;
+use ForwardBlock\Protocol\ProtocolConstants;
 
 /**
  * Class LedgerEntries
@@ -23,9 +24,16 @@ class LedgerEntries
      */
     public function addBatch(LedgerEntry ...$entries)
     {
+        $batchCount = count($entries);
+        if (($this->leCount + $batchCount) >= ProtocolConstants::MAX_LEDGER_ENTRIES) {
+            throw new \DomainException(
+                sprintf('Tx receipt cannot contain more than %d ledger entries', ProtocolConstants::MAX_LEDGER_ENTRIES)
+            );
+        }
+
         $this->batches[] = $entries;
         $this->batchCount++;
-        $this->leCount = $this->leCount + count($entries);
+        $this->leCount = $this->leCount + $batchCount;
     }
 
     /**

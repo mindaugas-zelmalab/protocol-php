@@ -30,6 +30,7 @@ abstract class AbstractTxReceipt
      * @param AbstractProtocolChain $p
      * @param Transaction $tx
      * @param int $blockHeightContext
+     * @noinspection PhpUnusedParameterInspection
      */
     public function __construct(AbstractProtocolChain $p, Transaction $tx, int $blockHeightContext)
     {
@@ -37,9 +38,6 @@ abstract class AbstractTxReceipt
         $this->tx = $tx;
         $this->data = new Binary();
         $this->ledgerEntries = [];
-
-        // Call generateLedgerEntries
-        $this->generateLedgerEntries($blockHeightContext);
     }
 
     /**

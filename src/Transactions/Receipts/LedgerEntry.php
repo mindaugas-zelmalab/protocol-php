@@ -43,7 +43,7 @@ class LedgerEntry
         $this->p = $p;
         $this->txR = $txR;
 
-        if ($flag < 0 || $flag > 0xff) {
+        if (!$this->p->txFlags()->has($flag)) {
             throw new \OutOfBoundsException('Invalid TxReceipt.ledgerEntry flag');
         }
 

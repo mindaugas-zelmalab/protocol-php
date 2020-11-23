@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions;
 
+use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Validator;
 
@@ -101,8 +102,9 @@ abstract class AbstractTxFlag
 
     /**
      * @param Transaction $tx
+     * @param Binary $bytes
      * @param int $blockHeightContext
      * @return AbstractTxReceipt
      */
-    abstract public function decodeReceipt(Transaction $tx, int $blockHeightContext): AbstractTxReceipt;
+    abstract public function decodeReceipt(Transaction $tx, Binary $bytes, int $blockHeightContext): AbstractTxReceipt;
 }

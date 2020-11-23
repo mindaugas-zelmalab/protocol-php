@@ -36,6 +36,14 @@ class TxFlags
     }
 
     /**
+     * @return LedgerFlags
+     */
+    public function ledgerFlags(): LedgerFlags
+    {
+        return $this->ledgerFlags;
+    }
+
+    /**
      * @param AbstractTxFlag $flag
      * @return $this
      */

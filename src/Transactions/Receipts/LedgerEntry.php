@@ -66,6 +66,38 @@ class LedgerEntry
     }
 
     /**
+     * @return string
+     */
+    public function account(): string
+    {
+        return $this->hash160;
+    }
+
+    /**
+     * @return int
+     */
+    public function flag(): int
+    {
+        return $this->flag;
+    }
+
+    /**
+     * @return int
+     */
+    public function amount(): int
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function asset(): ?string
+    {
+        return $this->asset;
+    }
+
+    /**
      * @return void
      */
     public function markApplied(): void

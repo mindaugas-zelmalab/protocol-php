@@ -163,7 +163,28 @@ abstract class AbstractTxReceipt
      * @return Binary
      * @throws TxEncodeException
      */
+    public function getReceiptHash(): Binary
+    {
+        $raw = $this->halfSerialize()->append($this->ledgerEntriesHash());
+        return $this->p->hash256($raw);
+    }
+
+    /**
+     * @return Binary
+     * @throws TxEncodeException
+     */
     public function serialize(): Binary
+    {
+        $ser = $this->halfSerialize();
+        $ser->append($this->ledgerEntries->serializedBatches());
+        return $ser->readOnly(true);
+    }
+
+    /**
+     * @return Binary
+     * @throws TxEncodeException
+     */
+    private function halfSerialize(): Binary
     {
         if (!is_int($this->status)) {
             throw new TxEncodeException('TxReceipt status not set');
@@ -178,9 +199,7 @@ abstract class AbstractTxReceipt
 
         $ser->append(UInts::Encode_UInt1LE($this->data->sizeInBytes));
         $ser->append($this->data);
-        $ser->append($this->ledgerEntries->serializedBatches());
-
-        return $ser->readOnly(true);
+        return $ser;
     }
 
     /**

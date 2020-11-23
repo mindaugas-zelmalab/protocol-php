@@ -30,24 +30,9 @@ class LedgerFlags
      */
     public function append(int $dec, bool $isCredit, bool $isFeeFlag = false): self
     {
-        if ($dec < 0 || $dec > 0xffff) {
-            throw new \OutOfRangeException('Ledger flag cannot exceed 2 bytes');
-        }
-
-        if (isset($this->flags[$dec])) {
-            throw new \DomainException('Cannot override existing ledger flag');
-        }
-
-        if ($isFeeFlag && $isCredit) {
-            throw new \UnexpectedValueException('Fee flag cannot be of type credit');
-        }
-
+        $lF = new LedgerFlag($dec, $isCredit, $isFeeFlag);
+        $this->flags[$dec] = $lF;
         $this->count++;
-        $this->flags[$dec] = [
-            "isCredit" => $isCredit,
-            "isFee" => $isFeeFlag,
-        ];
-
         return $this;
     }
 
@@ -62,19 +47,14 @@ class LedgerFlags
 
     /**
      * @param int $dec
-     * @return bool|null
+     * @return LedgerFlag
      */
-    public function isCredit(int $dec): ?bool
+    public function get(int $dec): LedgerFlag
     {
-        return $this->flags[$dec]["isCredit"] ?? null;
-    }
+        if (!$this->has($dec)) {
+            throw new \OutOfBoundsException('Invalid ledger flag');
+        }
 
-    /**
-     * @param int $dec
-     * @return bool|null
-     */
-    public function isFeeFlag(int $dec): ?bool
-    {
-        return $this->flags[$dec]["isFee"] ?? null;
+        return $this->flags[$dec];
     }
 }

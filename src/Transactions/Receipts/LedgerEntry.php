@@ -20,8 +20,8 @@ class LedgerEntry
 
     /** @var string */
     protected string $hash160;
-    /** @var int */
-    protected int $flag;
+    /** @var LedgerFlag */
+    protected LedgerFlag $flag;
     /** @var int */
     protected int $amount;
     /** @var string|null */
@@ -33,26 +33,22 @@ class LedgerEntry
      * LedgerEntry constructor.
      * @param AbstractProtocolChain $p
      * @param AbstractTxReceipt $txR
+     * @param LedgerFlag $lF
      * @param string $hash160
-     * @param int $flag
      * @param int $amount
      * @param string|null $asset
      */
-    public function __construct(AbstractProtocolChain $p, AbstractTxReceipt $txR, string $hash160, int $flag, int $amount, ?string $asset = null)
+    public function __construct(AbstractProtocolChain $p, AbstractTxReceipt $txR, LedgerFlag $lF, string $hash160, int $amount, ?string $asset = null)
     {
         $this->p = $p;
         $this->txR = $txR;
-
-        if (!$this->p->txFlags()->has($flag)) {
-            throw new \OutOfBoundsException('Invalid TxReceipt.ledgerEntry flag');
-        }
 
         if ($amount < 0 || $amount > UInts::MAX) {
             throw new \OutOfRangeException('Invalid TxReceipt.ledgerEntry amount');
         }
 
+        $this->flag = $lF;
         $this->hash160 = $hash160;
-        $this->flag = $flag;
         $this->amount = $amount;
         $this->asset = $asset;
     }
@@ -74,9 +70,9 @@ class LedgerEntry
     }
 
     /**
-     * @return int
+     * @return LedgerFlag
      */
-    public function flag(): int
+    public function flag(): LedgerFlag
     {
         return $this->flag;
     }

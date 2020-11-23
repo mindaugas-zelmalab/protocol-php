@@ -6,6 +6,7 @@ namespace ForwardBlock\Protocol\Transactions;
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerEntry;
+use ForwardBlock\Protocol\Transactions\Receipts\LedgerFlag;
 
 /**
  * Class AbstractTxReceipt
@@ -88,13 +89,22 @@ abstract class AbstractTxReceipt
     abstract protected function generateLedgerEntries(int $blockHeightContext): void;
 
     /**
+     * @param LedgerFlag $lF
      * @param string $hash160
-     * @param int $flag
      * @param int $amount
      * @param string|null $assetId
+     * @return LedgerEntry
      */
-    protected function createLedgerEntry(string $hash160, int $flag, int $amount, ?string $assetId = null): void
+    protected function createLedgerEntry(LedgerFlag $lF, string $hash160, int $amount, ?string $assetId = null): LedgerEntry
     {
-        $this->ledgerEntries[] = new LedgerEntry($this->p, $this, $hash160, $flag, $amount, $assetId);
+        return new LedgerEntry($this->p, $this, $lF, $hash160, $amount, $assetId);
+    }
+
+    /**
+     * @param LedgerEntry ...$entries
+     */
+    protected function registerLedgerEntriesBatch(LedgerEntry ...$entries): void
+    {
+        $this->ledgerEntries[] = $entries;
     }
 }

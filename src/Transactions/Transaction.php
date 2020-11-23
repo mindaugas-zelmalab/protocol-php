@@ -42,7 +42,7 @@ class Transaction extends AbstractTx
     private function __construct(AbstractProtocolChain $p, Binary $bytes)
     {
         parent::__construct($p);
-        $this->raw = $bytes;
+        $this->raw = $bytes->readOnly(true);
 
         if ($bytes->sizeInBytes > AbstractProtocolChain::MAX_TRANSACTION_SIZE) {
             throw new TxDecodeException(sprintf(
@@ -217,6 +217,22 @@ class Transaction extends AbstractTx
             "fee" => $this->fee,
             "timeStamp" => $this->timeStamp,
         ];
+    }
+
+    /**
+     * @return Binary
+     */
+    public function hash(): Binary
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @return Binary
+     */
+    public function raw(): Binary
+    {
+        return $this->raw;
     }
 
     /**

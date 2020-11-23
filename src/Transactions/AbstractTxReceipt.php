@@ -46,16 +46,24 @@ abstract class AbstractTxReceipt
         $read->throwUnderflowEx();
 
         // Step 1
+        $txId = $read->next(32);
+        if ($txId !== $tx->hash()->raw()) {
+            throw new TxDecodeException(sprintf(
+                'Receipt for tx "0x%s" does not match transaction hash "0x%s"', bin2hex($txId), bin2hex($tx->hash()->raw())
+            ));
+        }
+
+        // Step 2
         $status = UInts::Decode_UInt2LE($read->first(2));
         $receipt->setStatus($status);
 
-        // Step 2
+        // Step 3
         $dataLen = UInts::Decode_UInt1LE($read->next(1));
         if ($dataLen > 0) { // Step 2.1
             $receipt->data()->append($read->next($dataLen));
         }
 
-        // Step 3
+        // Step 4
         $leBatches = UInts::Decode_UInt1LE($read->next(1));
         if ($leBatches > 0) {
             for ($lB = 0; $lB < $leBatches; $lB++) {
@@ -191,6 +199,7 @@ abstract class AbstractTxReceipt
         }
 
         $ser = new Binary();
+        $ser->append($this->tx->hash()->raw());
         $ser->append(UInts::Encode_UInt2LE($this->status));
 
         if ($this->data->sizeInBytes > 0xff) {

@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Blocks;
 
+use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Exception\BlockForgeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\KeyPair\PublicKey;
+use ForwardBlock\Protocol\Transactions\CheckedTx;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -79,5 +81,25 @@ abstract class AbstractBlockForge extends AbstractBlock
         return $this;
     }
 
+    /**
+     * @param CheckedTx $tx
+     */
+    protected function appendCheckedTx(CheckedTx $tx): void
+    {
+        $this->txs->append($tx->tx());
+        $this->txCount++;
+    }
 
+    /**
+     * @param bool $includeSignatures
+     * @return Binary
+     * @throws \ForwardBlock\Protocol\Exception\BlockEncodeException
+     */
+    public function serialize(bool $includeSignatures): Binary
+    {
+        $this->forger = hex2bin($this->forgerPubKey->getHash160());
+        $this->merkleTx = $this->txs->merkleRoot()->raw();
+        $this->merkleTxReceipts = $this->txsReceipts->merkleRoot()->raw();
+        return parent::serialize($includeSignatures);
+    }
 }

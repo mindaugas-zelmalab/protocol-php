@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\Exception;
 
 /**
- * Class BlockForgeException
+ * Class BlockEncodeException
  * @package ForwardBlock\Protocol\Exception
  */
-class BlockForgeException extends BlocksException
+class BlockEncodeException extends BlocksException
 {
 }

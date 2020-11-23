@@ -3,115 +3,38 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Blocks;
 
-use Comely\DataTypes\Buffer\Binary;
-use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Transactions\AbstractTxReceipt;
+use ForwardBlock\Protocol\Transactions\Transaction;
 
 /**
  * Class BlockTxReceipts
  * @package ForwardBlock\Protocol\Blocks
  */
-class BlockTxReceipts implements \Iterator, \Countable
+class BlockTxReceipts extends AbstractMerkleMap
 {
-    /** @var AbstractProtocolChain */
-    private AbstractProtocolChain $p;
-    /** @var int */
-    private int $count;
-    /** @var array */
-    private array $receipts;
-
-    /**
-     * BlockTxReceipts constructor.
-     * @param AbstractProtocolChain $p
-     */
-    public function __construct(AbstractProtocolChain $p)
-    {
-        $this->p = $p;
-        $this->count = 0;
-        $this->receipts = [];
-    }
-
     /**
      * @param AbstractTxReceipt $r
      * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
      */
     public function append(AbstractTxReceipt $r): void
     {
-        $this->receipts[bin2hex($r->getReceiptHash()->raw())] = $r;
-        $this->count++;
+        $this->append2Tree($r->getReceiptHash()->raw(), $r);
     }
 
     /**
-     * @return Binary
+     * @param int $dec
+     * @return Transaction
      */
-    public function merkleRoot(): Binary
+    public function index(int $dec): Transaction
     {
-        if (!$this->count) {
-            return new Binary(str_repeat("\0", 32));
-        }
-
-        $bytes = [];
-        $allReceiptHashes = array_keys($this->receipts);
-        foreach ($allReceiptHashes as $hash) {
-            $bytes[] = hex2bin($hash);
-        }
-
-        return $this->p->hash256(new Binary(implode("", $bytes)))->readOnly(true);
+        return parent::index($dec);
     }
 
     /**
-     * @return array
+     * @return Transaction
      */
-    public function all(): array
+    public function current(): Transaction
     {
-        return $this->receipts;
-    }
-
-    /**
-     * @return int
-     */
-    public function count(): int
-    {
-        return $this->count;
-    }
-
-    /**
-     * @return AbstractTxReceipt
-     */
-    public function current(): AbstractTxReceipt
-    {
-        return current($this->receipts);
-    }
-
-    /**
-     * @return string
-     */
-    public function key(): string
-    {
-        return key($this->receipts);
-    }
-
-    /**
-     * @return void
-     */
-    public function rewind(): void
-    {
-        reset($this->receipts);
-    }
-
-    /**
-     * @return void
-     */
-    public function next(): void
-    {
-        next($this->receipts);
-    }
-
-    /**
-     * @return bool
-     */
-    public function valid(): bool
-    {
-        return key($this->receipts) !== null;
+        return parent::current();
     }
 }

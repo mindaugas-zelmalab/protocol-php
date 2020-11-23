@@ -83,10 +83,13 @@ abstract class AbstractBlockForge extends AbstractBlock
 
     /**
      * @param CheckedTx $tx
+     * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
      */
-    protected function appendCheckedTx(CheckedTx $tx): void
+    public function appendCheckedTx(CheckedTx $tx): void
     {
         $this->txs->append($tx->tx());
+        // Todo: check below that receipt is NOT raw
+        $this->txsReceipts->append($tx->rawReceipt());
         $this->txCount++;
     }
 

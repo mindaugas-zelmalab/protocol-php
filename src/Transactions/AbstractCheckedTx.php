@@ -8,10 +8,10 @@ use ForwardBlock\Protocol\Accounts\ChainAccountInterface;
 use ForwardBlock\Protocol\Exception\CheckTxException;
 
 /**
- * Class CheckedTx
+ * Class AbstractCheckedTx
  * @package ForwardBlock\Protocol\Transactions
  */
-class CheckedTx
+abstract class AbstractCheckedTx
 {
     /** @var Transaction */
     protected Transaction $tx;

@@ -27,7 +27,7 @@ class LedgerEntry
     /** @var string|null */
     protected ?string $asset = null;
     /** @var bool */
-    protected bool $appliedSuccess = false;
+    protected bool $applicable = false;
 
     /**
      * LedgerEntry constructor.
@@ -100,17 +100,17 @@ class LedgerEntry
     /**
      * @return void
      */
-    public function markApplied(): void
+    public function markApplicable(): void
     {
-        $this->appliedSuccess = true;
+        $this->applicable = true;
     }
 
     /**
      * @return bool
      */
-    public function isApplied(): bool
+    public function isApplicable(): bool
     {
-        return $this->appliedSuccess;
+        return $this->applicable;
     }
 
     /**
@@ -123,7 +123,7 @@ class LedgerEntry
         $ser .= UInts::Encode_UInt2LE($this->flag->dec());
         $ser .= UInts::Encode_UInt8LE($this->amount);
         $ser .= str_pad(strval($this->asset), 8, "\0", STR_PAD_LEFT);
-        $ser .= $this->appliedSuccess ? "\1" : "\0";
+        $ser .= $this->applicable ? "\1" : "\0";
 
         return $ser;
     }

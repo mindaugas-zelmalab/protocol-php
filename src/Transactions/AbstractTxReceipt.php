@@ -23,6 +23,8 @@ abstract class AbstractTxReceipt
     protected AbstractProtocolChain $p;
     /** @var Transaction */
     protected Transaction $tx;
+    /** @var int */
+    protected int $blockHeightContext;
 
     /** @var int|null */
     protected ?int $status = null;
@@ -111,10 +113,26 @@ abstract class AbstractTxReceipt
         $this->tx = $tx;
         $this->data = new Binary();
         $this->ledgerEntries = new LedgerEntries();
+        $this->blockHeightContext = $blockHeightContext;
 
         // Generate ledger entries here
-        $this->generateLedgerEntries($blockHeightContext);
+        $this->generateLedgerEntries();
     }
+
+    /**
+     * This method is called on construct of receipt to generate RAW ledger entries
+     */
+    abstract protected function generateLedgerEntries(): void;
+
+    /**
+     * This method is called when transaction is being applied
+     */
+    abstract protected function applyCallback(): void;
+
+    /**
+     * This method is called when transaction is being undone
+     */
+    abstract protected function undoCallback(): void;
 
     /**
      * @return Transaction
@@ -210,11 +228,6 @@ abstract class AbstractTxReceipt
         $ser->append($this->data);
         return $ser;
     }
-
-    /**
-     * @param int $blockHeightContext
-     */
-    abstract protected function generateLedgerEntries(int $blockHeightContext): void;
 
     /**
      * @param LedgerFlag $lF

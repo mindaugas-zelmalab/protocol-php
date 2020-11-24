@@ -327,6 +327,9 @@ class Block extends AbstractBlock
         return $this->merkleTxReceipts;
     }
 
+    /**
+     * @return int
+     */
     public function bodySize(): int
     {
         return $this->bodySize;

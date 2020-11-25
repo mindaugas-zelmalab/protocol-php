@@ -19,27 +19,42 @@ abstract class AbstractCheckedTx
     protected AbstractTxReceipt $receipt;
 
     /**
-     * CheckedTx constructor.
+     * AbstractCheckedTx constructor.
      * @param AbstractProtocolChain $p
-     * @param ChainAccountInterface $sender
+     * @param ChainAccountInterface|null $sender
      * @param Transaction $tx
      * @param int $blockHeightContext
      * @throws CheckTxException
      * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
      */
-    public function __construct(AbstractProtocolChain $p, ChainAccountInterface $sender, Transaction $tx, int $blockHeightContext)
+    public function __construct(AbstractProtocolChain $p, ?ChainAccountInterface $sender, Transaction $tx, int $blockHeightContext)
     {
         $this->tx = $tx;
 
         // Signatures Verification
-        $signatures = $tx->signatures();
-        $reqSigns = $p->accounts()->sigRequiredCount($sender);
-        $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage()->base16(), ...$signatures);
-        if ($reqSigns > $verifiedSigns) {
-            throw new CheckTxException(
-                sprintf('Required %d signatures, verified %d', $reqSigns, $verifiedSigns),
-                CheckTxException::ERR_SIGNATURES
-            );
+        $verifiedSigns = true;
+        if ($blockHeightContext === 0) {
+            if ($tx->flag() !== AbstractProtocolChain::GENESIS_TX_FLAG) {
+                throw new CheckTxException('Non-Genesis tx in block height context 0 must verify signatures');
+            }
+
+            $verifiedSigns = false;
+        }
+
+        if ($verifiedSigns) {
+            if (!$sender) {
+                throw new CheckTxException('Sender is required for all transactions');
+            }
+
+            $signatures = $tx->signatures();
+            $reqSigns = $p->accounts()->sigRequiredCount($sender);
+            $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage()->base16(), ...$signatures);
+            if ($reqSigns > $verifiedSigns) {
+                throw new CheckTxException(
+                    sprintf('Required %d signatures, verified %d', $reqSigns, $verifiedSigns),
+                    CheckTxException::ERR_SIGNATURES
+                );
+            }
         }
 
         // Get Raw Receipt

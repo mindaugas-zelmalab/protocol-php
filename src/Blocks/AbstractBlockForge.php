@@ -5,10 +5,11 @@ namespace ForwardBlock\Protocol\Blocks;
 
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
+use ForwardBlock\Protocol\Exception\BlockEncodeException;
 use ForwardBlock\Protocol\Exception\BlockForgeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\KeyPair\PublicKey;
-use ForwardBlock\Protocol\Transactions\CheckedTx;
+use ForwardBlock\Protocol\Transactions\AbstractCheckedTx;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -19,6 +20,8 @@ abstract class AbstractBlockForge extends AbstractBlock
 {
     /** @var PublicKey|null */
     protected ?PublicKey $forgerPubKey = null;
+    /** @var array */
+    protected array $bodyTxs = [];
 
     /**
      * BlockForge constructor.
@@ -82,16 +85,22 @@ abstract class AbstractBlockForge extends AbstractBlock
     }
 
     /**
-     * @param CheckedTx $tx
-     * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
+     * @param AbstractCheckedTx $tx
+     * @throws BlockForgeException
      */
-    public function appendCheckedTx(CheckedTx $tx): void
+    public function appendTx(AbstractCheckedTx $tx): void
     {
-        $this->txs->append($tx->tx());
-        // Todo: check below that receipt is NOT raw
-        $this->txsReceipts->append($tx->rawReceipt());
-        $this->txCount++;
+        if ($tx->rawReceipt()->isFinalised()) {
+            throw new BlockForgeException('Tx with final receipt cannot be appended');
+        }
+
+        $this->bodyTxs[] = $tx;
     }
+
+    /**
+     * @return void
+     */
+    abstract protected function generateFinalReceipts(): void;
 
     /**
      * @param bool $includeSignatures
@@ -100,7 +109,16 @@ abstract class AbstractBlockForge extends AbstractBlock
      */
     public function serialize(bool $includeSignatures): Binary
     {
+        if (!$this->forgerPubKey) {
+            throw new BlockEncodeException('Block forger public key is required');
+        }
+
         $this->forger = hex2bin($this->forgerPubKey->getHash160());
+
+        // Final receipts
+        $this->generateFinalReceipts();
+
+        // Merkle
         $this->merkleTx = $this->txs->merkleRoot()->raw();
         $this->merkleTxReceipts = $this->txsReceipts->merkleRoot()->raw();
         return parent::serialize($includeSignatures);

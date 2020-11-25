@@ -135,6 +135,14 @@ abstract class AbstractTxReceipt
     abstract protected function undoCallback(): void;
 
     /**
+     * @return bool
+     */
+    public function isFinalised(): bool
+    {
+        return is_int($this->status) && $this->status >= 0;
+    }
+
+    /**
      * @return Transaction
      */
     public function getTx(): Transaction

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\Blocks;
 
 use ForwardBlock\Protocol\Transactions\AbstractTxReceipt;
-use ForwardBlock\Protocol\Transactions\Transaction;
 
 /**
  * Class BlockTxReceipts
@@ -23,17 +22,17 @@ class BlockTxReceipts extends AbstractMerkleMap
 
     /**
      * @param int $dec
-     * @return Transaction
+     * @return AbstractTxReceipt
      */
-    public function index(int $dec): Transaction
+    public function index(int $dec): AbstractTxReceipt
     {
         return parent::index($dec);
     }
 
     /**
-     * @return Transaction
+     * @return AbstractTxReceipt
      */
-    public function current(): Transaction
+    public function current(): AbstractTxReceipt
     {
         return parent::current();
     }

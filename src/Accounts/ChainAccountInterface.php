@@ -13,4 +13,9 @@ interface ChainAccountInterface
      * @return array
      */
     public function getAllPublicKeys(): array;
+
+    /**
+     * @return bool
+     */
+    public function canForgeBlocks(): bool;
 }

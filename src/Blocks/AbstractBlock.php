@@ -8,6 +8,7 @@ use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Exception\BlockEncodeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\Math\UInts;
+use ForwardBlock\Protocol\Validator;
 
 /**
  * Class AbstractBlock
@@ -59,6 +60,29 @@ abstract class AbstractBlock
         $this->p = $p;
         $this->txs = new BlockTxs($p);
         $this->txsReceipts = new BlockTxReceipts($p);
+    }
+
+    /**
+     * @param string|null $chainId
+     * @return Binary
+     * @throws BlockEncodeException
+     */
+    public function hashPreImage(?string $chainId = null): Binary
+    {
+        if ($chainId) {
+            if (!Validator::isValidChainId($chainId)) {
+                throw new BlockEncodeException('Cannot generate hashPreImage; Invalid chain identifier');
+            }
+        }
+
+        if (!$chainId) {
+            $chainId = $this->p->config()->chainId;
+        }
+
+        $raw = $this->serialize(false)->copy()
+            ->prepend(hex2bin($chainId));
+
+        return $this->p->hash256($raw)->readOnly(true);
     }
 
     /**

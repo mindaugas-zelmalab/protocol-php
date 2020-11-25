@@ -27,11 +27,11 @@ class Signature implements SignatureInterface
      */
     public function __construct(Base16 $r, Base16 $s, int $v)
     {
-        if ($r->sizeInBytes !== 32) {
+        if ($r->sizeInBytes !== 64) {
             throw new \LengthException('Signature R must be precisely 32 bytes');
         }
 
-        if ($s->sizeInBytes !== 32) {
+        if ($s->sizeInBytes !== 64) {
             throw new \LengthException('Signature S must be precisely 32 bytes');
         }
 

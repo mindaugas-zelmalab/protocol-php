@@ -41,8 +41,6 @@ abstract class AbstractTx
     protected int $fee = 0;
     /** @var int */
     protected int $timeStamp;
-    /** @var int */
-    protected int $feePerByte = 0;
 
     /**
      * AbstractTx constructor.

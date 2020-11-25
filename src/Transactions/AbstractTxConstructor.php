@@ -29,14 +29,16 @@ abstract class AbstractTxConstructor extends AbstractTx
      * @param AbstractProtocolChain $p
      * @param int $ver
      * @param AbstractTxFlag $flag
+     * @param int $epoch
+     * @throws TxConstructException
      */
-    protected function __construct(AbstractProtocolChain $p, int $ver, AbstractTxFlag $flag)
+    protected function __construct(AbstractProtocolChain $p, int $ver, AbstractTxFlag $flag, int $epoch)
     {
         parent::__construct($p);
         $this->version = $ver;
         $this->txFlag = $flag;
         $this->flag = $flag->id();
-        $this->timeStamp = time();
+        $this->timeStamp($epoch);
     }
 
     /**
@@ -108,11 +110,25 @@ abstract class AbstractTxConstructor extends AbstractTx
         return $this;
     }
 
+    /**
+     * @param PrivateKey $pK
+     * @return $this
+     * @throws TxConstructException
+     * @throws \ForwardBlock\Protocol\Exception\SignMessageException
+     * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
+     */
     public function signTransaction(PrivateKey $pK): self
     {
-
+        $sign = $pK->sign($this->hashPreImage()->base16());
+        $this->addSignature($sign);
+        return $this;
     }
 
+    /**
+     * @param bool $includeSignatures
+     * @return Binary
+     * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
+     */
     public function serialize(bool $includeSignatures): Binary
     {
         // Sender and Recipient Hash160

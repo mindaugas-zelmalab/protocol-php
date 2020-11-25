@@ -19,17 +19,14 @@ abstract class AbstractTxFlag
     protected int $id;
     /** @var string */
     protected string $name;
-    /** @var bool */
-    protected bool $isEnabled;
 
     /**
      * AbstractTxFlag constructor.
      * @param AbstractProtocolChain $p
      * @param int $id
      * @param string $name
-     * @param bool $status
      */
-    public function __construct(AbstractProtocolChain $p, int $id, string $name, bool $status)
+    public function __construct(AbstractProtocolChain $p, int $id, string $name)
     {
         if ($id < 0 || $id > 0xffff) {
             throw new \OutOfRangeException('Invalid flag ID/decimal');
@@ -42,25 +39,6 @@ abstract class AbstractTxFlag
         $this->p = $p;
         $this->id = $id;
         $this->name = strtoupper($name);
-        $this->isEnabled = $status;
-    }
-
-    /**
-     * @return $this
-     */
-    public function enabled(): self
-    {
-        $this->isEnabled = true;
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function disabled(): self
-    {
-        $this->isEnabled = false;
-        return $this;
     }
 
     /**
@@ -77,14 +55,6 @@ abstract class AbstractTxFlag
     public function name(): string
     {
         return $this->name;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnabled(): bool
-    {
-        return $this->isEnabled;
     }
 
     /**

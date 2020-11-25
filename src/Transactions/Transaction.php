@@ -21,6 +21,8 @@ class Transaction extends AbstractTx
     private Binary $hash;
     /** @var Binary */
     private Binary $raw;
+    /** @var int */
+    protected int $feePerByte = 0;
 
     /**
      * @param AbstractProtocolChain $p

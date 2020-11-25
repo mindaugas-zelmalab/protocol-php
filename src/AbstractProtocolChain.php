@@ -8,6 +8,7 @@ use Comely\Utils\OOP\OOP;
 use ForwardBlock\Protocol\Accounts\AccountsProto;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 use ForwardBlock\Protocol\KeyPair\KeyPairFactory;
+use ForwardBlock\Protocol\Transactions\AbstractTxFlag;
 use ForwardBlock\Protocol\Transactions\TxFlags;
 use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
 
@@ -48,6 +49,13 @@ abstract class AbstractProtocolChain implements ProtocolConstants
      * @param TxFlags $flags
      */
     abstract protected function registerTxFlags(TxFlags $flags): void;
+
+    /**
+     * @param AbstractTxFlag $f
+     * @param int $blockHeightContext
+     * @return bool
+     */
+    abstract protected function isEnabledTxFlag(AbstractTxFlag $f, int $blockHeightContext): bool;
 
     /**
      * @return string

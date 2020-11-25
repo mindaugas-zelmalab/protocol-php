@@ -6,6 +6,7 @@ namespace ForwardBlock\Protocol\Blocks;
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Exception\BlockEncodeException;
+use ForwardBlock\Protocol\Exception\TxEncodeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\Math\UInts;
 use ForwardBlock\Protocol\Validator;
@@ -159,7 +160,12 @@ abstract class AbstractBlock
             // Step 15
             for ($i = 0; $i < $txsCount; $i++) {
                 $serTx = $this->txs->index($i)->raw();
-                $serTxR = $this->txsReceipts->index($i)->raw();
+
+                try {
+                    $serTxR = $this->txsReceipts->index($i)->serialize();
+                } catch (TxEncodeException $e) {
+                    throw new BlockEncodeException(sprintf('[TxReceipt#%d][%s] %s', $i, get_class($e), $e->getMessage()));
+                }
 
                 // Step 15.1
                 $bodyBuffer->append(UInts::Encode_UInt2LE($serTx->sizeInBytes));

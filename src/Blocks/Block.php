@@ -32,7 +32,7 @@ class Block extends AbstractBlock
      */
     public static function Decode(AbstractProtocolChain $p, Binary $encoded, int $heightContext): self
     {
-        return new self($p, $encoded, $heightContext);
+        return new static($p, $encoded, $heightContext);
     }
 
     /**
@@ -42,7 +42,7 @@ class Block extends AbstractBlock
      * @param int $heightContext
      * @throws BlockDecodeException
      */
-    private function __construct(AbstractProtocolChain $p, Binary $bytes, int $heightContext)
+    protected function __construct(AbstractProtocolChain $p, Binary $bytes, int $heightContext)
     {
         parent::__construct($p);
         $this->raw = $bytes->readOnly(true);

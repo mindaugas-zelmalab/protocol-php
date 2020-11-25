@@ -26,6 +26,7 @@ abstract class AbstractCheckedTx
      * @param int $blockHeightContext
      * @throws CheckTxException
      * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
+     * @throws \ForwardBlock\Protocol\Exception\TxFlagException
      */
     public function __construct(AbstractProtocolChain $p, ?ChainAccountInterface $sender, Transaction $tx, int $blockHeightContext)
     {
@@ -55,6 +56,14 @@ abstract class AbstractCheckedTx
                     CheckTxException::ERR_SIGNATURES
                 );
             }
+        }
+
+        // Check TxFlag status in height context
+        $txFlag = $p->txFlags()->get($tx->flag());
+        if (!$p->isEnabledTxFlag($txFlag, $blockHeightContext)) {
+            throw new CheckTxException(
+                sprintf('Transaction flag %d (%s) is disabled in block height %d context', $txFlag->id(), strtoupper($txFlag->name()), $blockHeightContext)
+            );
         }
 
         // Get Raw Receipt

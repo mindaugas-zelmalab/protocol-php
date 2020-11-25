@@ -80,7 +80,6 @@ class Transaction extends AbstractTx
     {
         // Step 2
         $flag = UInts::Decode_UInt2LE($read->next(2));
-        // Todo: validate TxFlag
         $this->flag = $flag;
 
         // Step 3

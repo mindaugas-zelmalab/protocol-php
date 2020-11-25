@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions;
 
+use ForwardBlock\Protocol\Exception\TxFlagException;
 use ForwardBlock\Protocol\Math\UInts;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerFlags;
@@ -88,11 +89,12 @@ class TxFlags
     /**
      * @param int $id
      * @return AbstractTxFlag
+     * @throws TxFlagException
      */
     public function get(int $id): AbstractTxFlag
     {
         if (!$this->has($id)) {
-            throw new \InvalidArgumentException(sprintf('Cannot find TxFlag with ID %d (0x%s)', $id, UInts::Encode_UInt1LE($id)));
+            throw new TxFlagException(sprintf('Cannot find TxFlag with ID %d (0x%s)', $id, UInts::Encode_UInt1LE($id)));
         }
 
         return $this->flags[$id];

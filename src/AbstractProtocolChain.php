@@ -55,7 +55,7 @@ abstract class AbstractProtocolChain implements ProtocolConstants
      * @param int $blockHeightContext
      * @return bool
      */
-    abstract protected function isEnabledTxFlag(AbstractTxFlag $f, int $blockHeightContext): bool;
+    abstract public function isEnabledTxFlag(AbstractTxFlag $f, int $blockHeightContext): bool;
 
     /**
      * @return string

@@ -58,6 +58,19 @@ class LedgerEntry
     }
 
     /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        return [
+            "flag" => $this->flag,
+            "hash160" => $this->hash160,
+            "amount" => $this->amount,
+            "asset" => $this->asset,
+        ];
+    }
+
+    /**
      * @return AbstractTxReceipt
      */
     public function getReceipt(): AbstractTxReceipt

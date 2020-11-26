@@ -120,6 +120,18 @@ abstract class AbstractTxReceipt
     }
 
     /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        return [
+            "status" => $this->status,
+            "data" => $this->data->raw(),
+            "ledgerEntries" => $this->ledgerEntries,
+        ];
+    }
+
+    /**
      * This method is called on construct of receipt to generate RAW ledger entries
      */
     abstract protected function generateLedgerEntries(): void;

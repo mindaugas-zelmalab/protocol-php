@@ -167,8 +167,8 @@ abstract class AbstractTx
             if ($signsCount) {
                 /** @var Signature $signed */
                 foreach ($this->signs as $signed) {
-                    $ser->append(hex2bin($signed->r()));
-                    $ser->append(hex2bin($signed->s()));
+                    $ser->append(hex2bin($signed->r()->hexits(false)));
+                    $ser->append(hex2bin($signed->s()->hexits(false)));
                     $ser->append(UInts::Encode_UInt1LE($signed->v()));
                 }
             }

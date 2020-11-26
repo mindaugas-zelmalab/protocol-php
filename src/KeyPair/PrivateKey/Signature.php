@@ -45,6 +45,18 @@ class Signature implements SignatureInterface
     }
 
     /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        return [
+            "r" => $this->r->hexits(true),
+            "s" => $this->s->hexits(true),
+            "v" => $this->v,
+        ];
+    }
+
+    /**
      * @return Base16
      */
     public function r(): Base16

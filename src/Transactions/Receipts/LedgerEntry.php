@@ -67,6 +67,7 @@ class LedgerEntry
             "hash160" => "0x" . bin2hex($this->hash160),
             "amount" => $this->amount,
             "asset" => $this->asset,
+            "applicable" => $this->applicable,
         ];
     }
 

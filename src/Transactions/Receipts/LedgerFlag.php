@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions\Receipts;
 
+use ForwardBlock\Protocol\Math\UInts;
+
 /**
  * Class LedgerFlag
  * @package ForwardBlock\Protocol\Transactions\Receipts
@@ -39,6 +41,19 @@ class LedgerFlag
         $this->dec = $dec;
         $this->isCredit = $isCredit;
         $this->isFee = $isFee;
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        return [
+            "dec" => $this->dec,
+            "hex" => "0x" . UInts::Encode_UInt2LE($this->dec),
+            "type" => $this->isCredit ? "+" : "-",
+            "isFee" => $this->isFee,
+        ];
     }
 
     /**

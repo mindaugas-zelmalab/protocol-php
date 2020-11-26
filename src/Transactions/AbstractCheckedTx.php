@@ -21,41 +21,26 @@ abstract class AbstractCheckedTx
     /**
      * AbstractCheckedTx constructor.
      * @param AbstractProtocolChain $p
-     * @param ChainAccountInterface|null $sender
+     * @param ChainAccountInterface $sender
      * @param Transaction $tx
      * @param int $blockHeightContext
      * @throws CheckTxException
      * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
      * @throws \ForwardBlock\Protocol\Exception\TxFlagException
      */
-    public function __construct(AbstractProtocolChain $p, ?ChainAccountInterface $sender, Transaction $tx, int $blockHeightContext)
+    public function __construct(AbstractProtocolChain $p, ChainAccountInterface $sender, Transaction $tx, int $blockHeightContext)
     {
         $this->tx = $tx;
 
         // Signatures Verification
-        $verifiedSigns = true;
-        if ($blockHeightContext === 0) {
-            if ($tx->flag() !== AbstractProtocolChain::GENESIS_TX_FLAG) {
-                throw new CheckTxException('Non-Genesis tx in block height context 0 must verify signatures');
-            }
-
-            $verifiedSigns = false;
-        }
-
-        if ($verifiedSigns) {
-            if (!$sender) {
-                throw new CheckTxException('Sender is required for all transactions');
-            }
-
-            $signatures = $tx->signatures();
-            $reqSigns = $p->accounts()->sigRequiredCount($sender);
-            $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage()->base16(), ...$signatures);
-            if ($reqSigns > $verifiedSigns) {
-                throw new CheckTxException(
-                    sprintf('Required %d signatures, verified %d', $reqSigns, $verifiedSigns),
-                    CheckTxException::ERR_SIGNATURES
-                );
-            }
+        $signatures = $tx->signatures();
+        $reqSigns = $p->accounts()->sigRequiredCount($sender);
+        $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage()->base16(), ...$signatures);
+        if ($reqSigns > $verifiedSigns) {
+            throw new CheckTxException(
+                sprintf('Required %d signatures, verified %d', $reqSigns, $verifiedSigns),
+                CheckTxException::ERR_SIGNATURES
+            );
         }
 
         // Check TxFlag status in height context

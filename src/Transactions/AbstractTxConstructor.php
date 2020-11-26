@@ -112,14 +112,15 @@ abstract class AbstractTxConstructor extends AbstractTx
 
     /**
      * @param PrivateKey $pK
+     * @param string|null $chainId
      * @return $this
      * @throws TxConstructException
      * @throws \ForwardBlock\Protocol\Exception\SignMessageException
      * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
      */
-    public function signTransaction(PrivateKey $pK): self
+    public function signTransaction(PrivateKey $pK, ?string $chainId = null): self
     {
-        $sign = $pK->sign($this->hashPreImage()->base16());
+        $sign = $pK->sign($this->hashPreImage($chainId)->base16());
         $this->addSignature($sign);
         return $this;
     }

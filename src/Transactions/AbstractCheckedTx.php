@@ -32,10 +32,16 @@ abstract class AbstractCheckedTx
     {
         $this->tx = $tx;
 
+        // Block height context
+        $chainId = null;
+        if ($blockHeightContext === 0) {
+            $chainId = bin2hex(str_repeat("\0", 32));
+        }
+
         // Signatures Verification
         $signatures = $tx->signatures();
         $reqSigns = $p->accounts()->sigRequiredCount($sender);
-        $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage()->base16(), ...$signatures);
+        $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId)->base16(), ...$signatures);
         if ($reqSigns > $verifiedSigns) {
             throw new CheckTxException(
                 sprintf('Required %d signatures, verified %d', $reqSigns, $verifiedSigns),

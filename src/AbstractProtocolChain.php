@@ -18,6 +18,9 @@ use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
  */
 abstract class AbstractProtocolChain implements ProtocolConstants
 {
+    /** @var string */
+    protected const PROTOCOL_VERSION = "0.0.1";
+
     /** @var bool */
     protected bool $debug = false;
     /** @var Config */
@@ -28,6 +31,8 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     protected TxFlags $txFlags;
     /** @var AccountsProto */
     protected AccountsProto $aP;
+    /** @var int|null */
+    private ?int $versionId;
 
     /**
      * Protocol constructor.
@@ -63,6 +68,33 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     public function chainName(): string
     {
         return OOP::baseClassName(get_called_class());
+    }
+
+    /**
+     * @return string
+     */
+    public function version(): string
+    {
+        return static::PROTOCOL_VERSION;
+    }
+
+    /**
+     * @return int
+     */
+    public function versionId(): int
+    {
+        if ($this->versionId) {
+            return $this->versionId;
+        }
+
+        preg_match_all('/[0-9]+/', $this->version(), $matches);
+        $matches = $matches[0];
+        $v1 = $matches[0] ?? 0;
+        $v2 = $matches[1] ?? 0;
+        $v3 = $matches[2] ?? 0;
+
+        $this->versionId = $v1 * 10000 + $v2 * 100 + $v3;
+        return $this->versionId;
     }
 
     /**

@@ -83,7 +83,7 @@ abstract class AbstractProtocolChain implements ProtocolConstants
      */
     public function versionId(): int
     {
-        if ($this->versionId) {
+        if (isset($this->versionId)) {
             return $this->versionId;
         }
 

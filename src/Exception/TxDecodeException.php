@@ -35,7 +35,7 @@ class TxDecodeException extends TransactionsException
      * @param Throwable|null $prev
      * @return static
      */
-    public static function Incomplete(AbstractPreparedTx $tx, string $error, ?int $code = null, ?Throwable $prev = null): self
+    public static function Incomplete(AbstractPreparedTx $tx, string $error, int $code = 0, ?Throwable $prev = null): self
     {
         return new self($error, $code, $prev, $tx);
     }

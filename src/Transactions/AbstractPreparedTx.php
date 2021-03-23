@@ -59,18 +59,22 @@ abstract class AbstractPreparedTx extends AbstractTx
         $read = $bytes->read();
         $read->throwUnderflowEx();
 
-        // Step 1
-        $this->version = UInts::Decode_UInt1LE($read->first(1));
-        switch ($this->version) {
-            case 1:
-                $this->decodeTxV1($read);
-                break;
-            default:
-                throw new TxDecodeException(sprintf('Unsupported transaction version %d', $this->version));
-        }
+        try {
+            // Step 1
+            $this->version = UInts::Decode_UInt1LE($read->first(1));
+            switch ($this->version) {
+                case 1:
+                    $this->decodeTxV1($read);
+                    break;
+                default:
+                    throw new TxDecodeException(sprintf('Unsupported transaction version %d', $this->version));
+            }
 
-        // Decode callback
-        $this->decodeCallback();
+            // Decode callback
+            $this->decodeCallback();
+        } catch (\Throwable $t) {
+            throw TxDecodeException::Incomplete($this, sprintf('[%s][%s]: %s', get_class($t), $t->getCode(), $t->getMessage()));
+        }
     }
 
     abstract protected function decodeCallback(): void;

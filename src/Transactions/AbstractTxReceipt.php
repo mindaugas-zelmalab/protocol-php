@@ -5,8 +5,8 @@ namespace ForwardBlock\Protocol\Transactions;
 
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
-use ForwardBlock\Protocol\Exception\TxDecodeException;
 use ForwardBlock\Protocol\Exception\TxEncodeException;
+use ForwardBlock\Protocol\Exception\TxReceiptDecodeException;
 use ForwardBlock\Protocol\Math\UInts;
 use ForwardBlock\Protocol\ProtocolConstants;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerEntries;
@@ -39,7 +39,7 @@ abstract class AbstractTxReceipt
      * @param int $blockHeightContext
      * @param Binary $encoded
      * @return static
-     * @throws TxDecodeException
+     * @throws TxReceiptDecodeException
      */
     public static function Decode(AbstractProtocolChain $p, AbstractPreparedTx $tx, int $blockHeightContext, Binary $encoded): self
     {
@@ -50,7 +50,7 @@ abstract class AbstractTxReceipt
         // Step 1
         $txId = $read->next(32);
         if ($txId !== $tx->hash()->raw()) {
-            throw new TxDecodeException(sprintf(
+            throw new TxReceiptDecodeException(sprintf(
                 'Receipt for tx "0x%s" does not match transaction hash "0x%s"', bin2hex($txId), bin2hex($tx->hash()->raw())
             ));
         }
@@ -72,7 +72,7 @@ abstract class AbstractTxReceipt
                 $leC = UInts::Decode_UInt1LE($read->next(1));
                 $leBatch = [];
                 if ($leC < 0 || $leC > ProtocolConstants::MAX_LEDGER_ENTRIES) {
-                    throw new TxDecodeException(
+                    throw new TxReceiptDecodeException(
                         sprintf('Receipt batch contains %d ledger entries, allowed are 1 to %d', $leC, ProtocolConstants::MAX_LEDGER_ENTRIES)
                     );
                 }
@@ -88,7 +88,7 @@ abstract class AbstractTxReceipt
 
                     $status = $read->next(1);
                     if (!in_array($status, ["\0", "\1"])) {
-                        throw new TxDecodeException(sprintf('Invalid ledger entry # %d status byte', $leN + 1));
+                        throw new TxReceiptDecodeException(sprintf('Invalid ledger entry # %d status byte', $leN + 1));
                     }
 
                     $leBatch[] = $receipt->createLedgerEntry($flag, $hash160, $amount, $asset);

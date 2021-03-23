@@ -85,13 +85,13 @@ abstract class AbstractPreparedTx extends AbstractTx
         if ($hasSender === "\1") {
             $this->sender = $read->next(20);
         } elseif ($hasSender !== "\0") {
-            throw new TxDecodeException('Invalid "hasSender" flag byte');
+            throw TxDecodeException::Incomplete($this, 'Invalid "hasSender" flag byte');
         }
 
         // Step 4
         $nonce = UInts::Decode_UInt4LE($read->next(4));
         if ($nonce && !$this->sender) {
-            throw new TxDecodeException('Transaction has positive nonce but no sender');
+            throw TxDecodeException::Incomplete($this, 'Transaction has positive nonce but no sender');
         }
 
         $this->nonce = $nonce;
@@ -101,14 +101,14 @@ abstract class AbstractPreparedTx extends AbstractTx
         if ($hasRecipient === "\1") {
             $this->recipient = $read->next(20);
         } elseif ($hasRecipient !== "\0") {
-            throw new TxDecodeException('Invalid "hasRecipient" flag byte');
+            throw TxDecodeException::Incomplete($this, 'Invalid "hasRecipient" flag byte');
         }
 
         // Step 6
         $memoLen = UInts::Decode_UInt1LE($read->next(1));
         if ($memoLen > 0) {
             if ($memoLen > AbstractProtocolChain::MAX_TX_MEMO_LEN) {
-                throw new TxDecodeException(
+                throw TxDecodeException::Incomplete($this,
                     sprintf('Transaction memo of %d bytes exceeds max size of %d bytes', $memoLen, AbstractProtocolChain::MAX_TX_MEMO_LEN)
                 );
             }
@@ -116,7 +116,7 @@ abstract class AbstractPreparedTx extends AbstractTx
             try {
                 $this->memo = Validator::validatedMemo($read->next($memoLen));
             } catch (\Exception $e) {
-                throw new TxDecodeException(
+                throw TxDecodeException::Incomplete($this,
                     sprintf('Invalid memo (%s) %s', get_class($e), $e->getMessage())
                 );
             }
@@ -125,30 +125,30 @@ abstract class AbstractPreparedTx extends AbstractTx
         // Step 7
         $transfers = UInts::Decode_UInt1LE($read->next(1));
         if ($transfers > AbstractProtocolChain::MAX_TRANSFERS_PER_TX) {
-            throw new TxDecodeException(
+            throw TxDecodeException::Incomplete($this,
                 sprintf('Transaction cannot contain more than %d transfers', AbstractProtocolChain::MAX_TRANSFERS_PER_TX)
             );
         }
 
         if ($transfers) {
             if (!$this->recipient) {
-                throw new TxDecodeException('Transaction has transfer(s) with no recipient');
+                throw TxDecodeException::Incomplete($this, 'Transaction has transfer(s) with no recipient');
             }
 
             for ($i = 0; $i < $transfers; $i++) {
                 $amount = UInts::Decode_UInt8LE($read->next(8));
                 if ($amount > UInts::MAX) {
-                    throw new TxDecodeException(sprintf('Transfer amount overflow at index %d', $i));
+                    throw TxDecodeException::Incomplete($this, sprintf('Transfer amount overflow at index %d', $i));
                 }
 
                 $hasAsset = $read->next(1);
                 if ($hasAsset === "\1") {
                     $assetId = ltrim($read->next(8));
                     if (!Validator::isValidAssetId($assetId)) {
-                        throw new TxDecodeException(sprintf('Invalid transfer asset ID at index %d', $i));
+                        throw TxDecodeException::Incomplete($this, sprintf('Invalid transfer asset ID at index %d', $i));
                     }
                 } elseif ($hasAsset !== "\0") {
-                    throw new TxDecodeException(sprintf('Invalid transfer.hasAsset flag at transfer index %d', $i));
+                    throw TxDecodeException::Incomplete($this, sprintf('Invalid transfer.hasAsset flag at transfer index %d', $i));
                 }
 
                 $this->transfers[$assetId ?? null] = $amount;
@@ -159,7 +159,7 @@ abstract class AbstractPreparedTx extends AbstractTx
         $dataLen = UInts::Decode_UInt2LE($read->next(2));
         if ($dataLen > 0) {
             if ($dataLen > AbstractProtocolChain::MAX_ARBITRARY_DATA) {
-                throw new TxDecodeException(sprintf(
+                throw TxDecodeException::Incomplete($this, sprintf(
                     'Arbitrary data of %d bytes exceeds limit of %d bytes',
                     $dataLen,
                     AbstractProtocolChain::MAX_ARBITRARY_DATA
@@ -172,7 +172,7 @@ abstract class AbstractPreparedTx extends AbstractTx
         // Step 9
         $signs = UInts::Decode_UInt1LE($read->next(1));
         if ($signs > 5) {
-            throw new TxDecodeException('Transaction cannot have more than 5 signatures');
+            throw TxDecodeException::Incomplete($this, 'Transaction cannot have more than 5 signatures');
         }
 
         if ($signs > 0) {
@@ -183,7 +183,7 @@ abstract class AbstractPreparedTx extends AbstractTx
                     $signV = UInts::Decode_UInt1LE($read->next(1));
                     $sign = new Signature(new Base16(bin2hex($signR)), new Base16(bin2hex($signS)), $signV);
                 } catch (\Exception $e) {
-                    throw new TxDecodeException(sprintf('Error with signature %d; (%s) %s', $i, get_class($e), $e->getMessage()));
+                    throw TxDecodeException::Incomplete($this, sprintf('Error with signature %d; (%s) %s', $i, get_class($e), $e->getMessage()));
                 }
 
                 $this->signs[] = $sign;
@@ -196,12 +196,12 @@ abstract class AbstractPreparedTx extends AbstractTx
         // Step 11
         $this->timeStamp = UInts::Decode_UInt4LE($read->next(4));
         if (!Validator::isValidEpoch($this->timeStamp)) {
-            throw new TxDecodeException('Invalid timestamp');
+            throw TxDecodeException::Incomplete($this, 'Invalid timestamp');
         }
 
         // Check remaining bytes?
         if ($read->remaining()) {
-            throw new TxDecodeException('Transaction byte reader has excess bytes');
+            throw TxDecodeException::Incomplete($this, 'Transaction byte reader has excess bytes');
         }
     }
 

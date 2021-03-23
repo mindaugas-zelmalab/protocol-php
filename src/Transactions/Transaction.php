@@ -5,6 +5,7 @@ namespace ForwardBlock\Protocol\Transactions;
 
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
+use ForwardBlock\Protocol\Exception\TxDecodeException;
 use ForwardBlock\Protocol\Math\UInts;
 
 /**
@@ -22,7 +23,12 @@ class Transaction extends AbstractPreparedTx
      */
     public static function DecodeAs(AbstractProtocolChain $p, Binary $encoded): AbstractPreparedTx
     {
-        return $p->txFlags()->get(UInts::Decode_UInt2LE($encoded->substr(1, 2)->raw()))->decode($encoded);
+        $flagId = substr($encoded->raw(), 1, 2);
+        if (!$flagId) {
+            throw new TxDecodeException('Invalid encoded transaction bytes');
+        }
+
+        return $p->txFlags()->get(UInts::Decode_UInt2LE($flagId))->decode($encoded);
     }
 
     /**

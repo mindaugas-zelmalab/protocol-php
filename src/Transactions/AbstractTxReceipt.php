@@ -21,8 +21,8 @@ abstract class AbstractTxReceipt
 {
     /** @var AbstractProtocolChain */
     protected AbstractProtocolChain $p;
-    /** @var Transaction */
-    protected Transaction $tx;
+    /** @var AbstractPreparedTx */
+    protected AbstractPreparedTx $tx;
     /** @var int */
     protected int $blockHeightContext;
 
@@ -35,13 +35,13 @@ abstract class AbstractTxReceipt
 
     /**
      * @param AbstractProtocolChain $p
-     * @param Transaction $tx
+     * @param AbstractPreparedTx $tx
      * @param int $blockHeightContext
      * @param Binary $encoded
      * @return static
      * @throws TxDecodeException
      */
-    public static function Decode(AbstractProtocolChain $p, Transaction $tx, int $blockHeightContext, Binary $encoded): self
+    public static function Decode(AbstractProtocolChain $p, AbstractPreparedTx $tx, int $blockHeightContext, Binary $encoded): self
     {
         $receipt = new static($p, $tx, $blockHeightContext);
         $read = $encoded->read();
@@ -104,10 +104,10 @@ abstract class AbstractTxReceipt
     /**
      * AbstractTxReceipt constructor.
      * @param AbstractProtocolChain $p
-     * @param Transaction $tx
+     * @param AbstractPreparedTx $tx
      * @param int $blockHeightContext
      */
-    public function __construct(AbstractProtocolChain $p, Transaction $tx, int $blockHeightContext)
+    public function __construct(AbstractProtocolChain $p, AbstractPreparedTx $tx, int $blockHeightContext)
     {
         $this->p = $p;
         $this->tx = $tx;
@@ -155,9 +155,9 @@ abstract class AbstractTxReceipt
     }
 
     /**
-     * @return Transaction
+     * @return AbstractPreparedTx
      */
-    public function getTx(): Transaction
+    public function getTx(): AbstractPreparedTx
     {
         return $this->tx;
     }

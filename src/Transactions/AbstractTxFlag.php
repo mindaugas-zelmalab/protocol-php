@@ -64,17 +64,23 @@ abstract class AbstractTxFlag
     abstract public function create(array $args): AbstractTxConstructor;
 
     /**
-     * @param Transaction $tx
+     * @param Binary $encoded
+     * @return AbstractPreparedTx
+     */
+    abstract public function decode(Binary $encoded): AbstractPreparedTx;
+
+    /**
+     * @param AbstractPreparedTx $tx
      * @param int $blockHeightContext
      * @return AbstractTxReceipt
      */
-    abstract public function newReceipt(Transaction $tx, int $blockHeightContext): AbstractTxReceipt;
+    abstract public function newReceipt(AbstractPreparedTx $tx, int $blockHeightContext): AbstractTxReceipt;
 
     /**
-     * @param Transaction $tx
+     * @param AbstractPreparedTx $tx
      * @param Binary $bytes
      * @param int $blockHeightContext
      * @return AbstractTxReceipt
      */
-    abstract public function decodeReceipt(Transaction $tx, Binary $bytes, int $blockHeightContext): AbstractTxReceipt;
+    abstract public function decodeReceipt(AbstractPreparedTx $tx, Binary $bytes, int $blockHeightContext): AbstractTxReceipt;
 }

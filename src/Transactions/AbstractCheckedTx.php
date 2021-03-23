@@ -13,8 +13,8 @@ use ForwardBlock\Protocol\Exception\CheckTxException;
  */
 abstract class AbstractCheckedTx
 {
-    /** @var Transaction */
-    protected Transaction $tx;
+    /** @var AbstractPreparedTx */
+    protected AbstractPreparedTx $tx;
     /** @var AbstractTxReceipt */
     protected AbstractTxReceipt $receipt;
 
@@ -22,13 +22,13 @@ abstract class AbstractCheckedTx
      * AbstractCheckedTx constructor.
      * @param AbstractProtocolChain $p
      * @param ChainAccountInterface $sender
-     * @param Transaction $tx
+     * @param AbstractPreparedTx $tx
      * @param int $blockHeightContext
      * @throws CheckTxException
      * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
      * @throws \ForwardBlock\Protocol\Exception\TxFlagException
      */
-    public function __construct(AbstractProtocolChain $p, ChainAccountInterface $sender, Transaction $tx, int $blockHeightContext)
+    public function __construct(AbstractProtocolChain $p, ChainAccountInterface $sender, AbstractPreparedTx $tx, int $blockHeightContext)
     {
         $this->tx = $tx;
 
@@ -70,9 +70,9 @@ abstract class AbstractCheckedTx
     }
 
     /**
-     * @return Transaction
+     * @return AbstractPreparedTx
      */
-    public function tx(): Transaction
+    public function tx(): AbstractPreparedTx
     {
         return $this->tx;
     }

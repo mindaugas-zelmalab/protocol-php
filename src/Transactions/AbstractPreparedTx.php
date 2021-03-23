@@ -5,6 +5,7 @@ namespace ForwardBlock\Protocol\Transactions;
 
 use Comely\DataTypes\Buffer\Base16;
 use Comely\DataTypes\Buffer\Binary;
+use Comely\Utils\OOP\OOP;
 use ForwardBlock\Protocol\Exception\TxDecodeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\Math\UInts;
@@ -72,6 +73,8 @@ abstract class AbstractPreparedTx extends AbstractTx
 
             // Decode callback
             $this->decodeCallback();
+        } catch (TxDecodeException $e) {
+            throw $e;
         } catch (\Throwable $t) {
             throw TxDecodeException::Incomplete($this, sprintf('[%s][%s]: %s', get_class($t), $t->getCode(), $t->getMessage()));
         }
@@ -263,6 +266,9 @@ abstract class AbstractPreparedTx extends AbstractTx
             }
         }
 
+        // TxClass
+        $partialTx["txClass"] = OOP::baseClassName(get_called_class());
+        $partialTx["txData"] = null;
         return $partialTx;
     }
 

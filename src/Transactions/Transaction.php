@@ -23,4 +23,11 @@ class Transaction extends AbstractPreparedTx
     {
         return $p->txFlags()->get(UInts::Decode_UInt2LE($encoded->substr(1, 2)->raw()))->decode($encoded);
     }
+
+    /**
+     * Decode callback
+     */
+    public function decodeCallback(): void
+    {
+    }
 }

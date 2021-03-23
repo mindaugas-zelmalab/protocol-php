@@ -26,7 +26,7 @@ class TxDecodeException extends TransactionsException
     {
         parent::__construct($message, $code, $previous);
 
-        if($this->incompleteTx) {
+        if($tx) {
             $this->incompleteTx = $tx->array();
         }
     }

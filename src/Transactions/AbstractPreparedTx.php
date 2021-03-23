@@ -210,19 +210,51 @@ abstract class AbstractPreparedTx extends AbstractTx
      */
     public function __debugInfo(): array
     {
-        return [
-            "version" => $this->version,
-            "flag" => $this->flag,
-            "sender" => $this->sender,
-            "nonce" => $this->nonce,
-            "recipient" => $this->recipient,
-            "memo" => $this->memo,
-            "transfers" => $this->transfers,
-            "data" => $this->data(),
-            "signatures" => $this->signatures(),
-            "fee" => $this->fee,
-            "timeStamp" => $this->timeStamp,
+        return $this->array();
+    }
+
+    /**
+     * Returns Array (partial/incomplete if on error too)
+     * @return array
+     */
+    public function array(): array
+    {
+        $partialTx = [];
+        // Base props
+        $props = [
+            "version",
+            "flag",
+            "sender",
+            "nonce",
+            "recipient",
+            "memo",
+            "transfers",
+            "fee",
+            "timeStamp"
         ];
+
+        foreach ($props as $prop) {
+            if (isset($this->$prop)) {
+                $partialTx[$prop] = $this->$prop;
+            }
+        }
+
+        // Data
+        if (isset($this->data)) {
+            $partialTx["data"] = $this->data->base16()->hexits(false);
+        }
+
+        // Signatures
+        if (isset($this->signs) && $this->signs) {
+            $partialTx["signs"] = [];
+
+            /** @var Signature $sign */
+            foreach ($this->signs as $sign) {
+                $partialTx["signs"][] = $sign->array();
+            }
+        }
+
+        return $partialTx;
     }
 
     /**

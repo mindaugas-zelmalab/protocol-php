@@ -25,7 +25,10 @@ class TxDecodeException extends TransactionsException
     public function __construct($message = "", $code = 0, Throwable $previous = null, ?AbstractPreparedTx $tx = null)
     {
         parent::__construct($message, $code, $previous);
-        $this->incompleteTx = $tx->array();
+
+        if($this->incompleteTx) {
+            $this->incompleteTx = $tx->array();
+        }
     }
 
     /**

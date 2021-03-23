@@ -39,7 +39,7 @@ abstract class AbstractPreparedTx extends AbstractTx
      * @param Binary $bytes
      * @throws TxDecodeException
      */
-    private function __construct(AbstractProtocolChain $p, Binary $bytes)
+    protected function __construct(AbstractProtocolChain $p, Binary $bytes)
     {
         parent::__construct($p);
         $this->raw = $bytes->readOnly(true);

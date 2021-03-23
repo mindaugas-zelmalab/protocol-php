@@ -13,7 +13,7 @@ use Throwable;
 class TxDecodeException extends TransactionsException
 {
     /** @var array|null */
-    private ?array $incompleteTx;
+    private ?array $incompleteTx = null;
 
     /**
      * TxDecodeException constructor.
@@ -26,7 +26,7 @@ class TxDecodeException extends TransactionsException
     {
         parent::__construct($message, $code, $previous);
 
-        if($tx) {
+        if ($tx) {
             $this->incompleteTx = $tx->array();
         }
     }

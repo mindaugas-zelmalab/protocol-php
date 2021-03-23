@@ -68,7 +68,12 @@ abstract class AbstractPreparedTx extends AbstractTx
             default:
                 throw new TxDecodeException(sprintf('Unsupported transaction version %d', $this->version));
         }
+
+        // Decode callback
+        $this->decodeCallback();
     }
+
+    abstract protected function decodeCallback(): void;
 
     /**
      * @param Binary\ByteReader $read

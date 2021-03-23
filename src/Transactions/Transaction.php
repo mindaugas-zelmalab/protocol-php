@@ -17,6 +17,7 @@ class Transaction extends AbstractPreparedTx
      * @param AbstractProtocolChain $p
      * @param Binary $encoded
      * @return AbstractPreparedTx
+     * @throws \ForwardBlock\Protocol\Exception\TxDecodeException
      * @throws \ForwardBlock\Protocol\Exception\TxFlagException
      */
     public static function DecodeAs(AbstractProtocolChain $p, Binary $encoded): AbstractPreparedTx

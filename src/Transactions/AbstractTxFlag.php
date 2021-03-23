@@ -5,6 +5,7 @@ namespace ForwardBlock\Protocol\Transactions;
 
 use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
+use ForwardBlock\Protocol\Exception\TxDecodeException;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -66,6 +67,7 @@ abstract class AbstractTxFlag
     /**
      * @param Binary $encoded
      * @return AbstractPreparedTx
+     * @throws TxDecodeException
      */
     abstract public function decode(Binary $encoded): AbstractPreparedTx;
 

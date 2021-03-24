@@ -40,6 +40,10 @@ abstract class AbstractCheckedTx
 
         // Signatures Verification
         $signatures = $tx->signatures();
+        if (!$signatures) {
+            throw new CheckTxException('Transaction has no signatures', CheckTxException::ERR_SIGNATURES);
+        }
+
         $reqSigns = $p->accounts()->sigRequiredCount($sender);
         $forkIdHeightContext = $p->getForkId($blockHeightContext);
         $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId, $forkIdHeightContext)->base16(), ...$signatures);

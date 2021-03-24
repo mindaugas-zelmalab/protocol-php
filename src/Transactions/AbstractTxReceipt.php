@@ -135,7 +135,7 @@ abstract class AbstractTxReceipt
         return [
             "status" => $this->status,
             "data" => $this->data->raw(),
-            "ledgerEntries" => $this->ledgerEntries,
+            "ledgerEntries" => $this->ledgerEntries->dump(),
         ];
     }
 

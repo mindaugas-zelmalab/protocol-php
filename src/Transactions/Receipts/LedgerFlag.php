@@ -48,6 +48,14 @@ class LedgerFlag
      */
     public function __debugInfo(): array
     {
+        return $this->dump();
+    }
+
+    /**
+     * @return array
+     */
+    public function dump(): array
+    {
         return [
             "dec" => $this->dec,
             "hex" => "0x" . bin2hex(UInts::Encode_UInt2LE($this->dec)),

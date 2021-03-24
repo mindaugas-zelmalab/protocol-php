@@ -71,7 +71,7 @@ class LedgerEntry
     public function dump(): array
     {
         return [
-            "flag" => $this->flag,
+            "flag" => $this->flag->dump(),
             "hash160" => "0x" . bin2hex($this->hash160),
             "amount" => $this->amount,
             "asset" => $this->asset,

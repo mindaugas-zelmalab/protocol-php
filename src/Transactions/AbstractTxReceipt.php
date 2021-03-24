@@ -124,6 +124,14 @@ abstract class AbstractTxReceipt
      */
     public function __debugInfo(): array
     {
+        return $this->dump();
+    }
+
+    /**
+     * @return array
+     */
+    public function dump(): array
+    {
         return [
             "status" => $this->status,
             "data" => $this->data->raw(),

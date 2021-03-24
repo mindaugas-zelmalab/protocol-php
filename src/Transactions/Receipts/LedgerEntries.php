@@ -41,6 +41,14 @@ class LedgerEntries
      */
     public function __debugInfo(): array
     {
+        return $this->dump();
+    }
+
+    /**
+     * @return array
+     */
+    public function dump(): array
+    {
         return [
             "batchCount" => $this->batchCount,
             "totalCount" => $this->leCount,

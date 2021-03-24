@@ -41,7 +41,7 @@ abstract class AbstractCheckedTx
         // Signatures Verification
         $signatures = $tx->signatures();
         if (!$signatures) {
-            throw new CheckTxException('Transaction has no signatures', CheckTxException::ERR_SIGNATURES);
+            throw new CheckTxException('Transaction has no signatures', CheckTxException::ERR_UNSIGNED);
         }
 
         $reqSigns = $p->accounts()->sigRequiredCount($sender);
@@ -58,7 +58,8 @@ abstract class AbstractCheckedTx
         $txFlag = $p->txFlags()->get($tx->flag());
         if (!$p->isEnabledTxFlag($txFlag, $blockHeightContext)) {
             throw new CheckTxException(
-                sprintf('Transaction flag %d (%s) is disabled in block height %d context', $txFlag->id(), strtoupper($txFlag->name()), $blockHeightContext)
+                sprintf('Transaction flag %d (%s) is disabled in block height %d context', $txFlag->id(), strtoupper($txFlag->name()), $blockHeightContext),
+                CheckTxException::ERR_FLAG_DISABLED
             );
         }
 

@@ -33,7 +33,7 @@ abstract class AbstractCheckedTx
         $this->tx = $tx;
 
         // Block height context
-        $chainId = null;
+        $chainId = $p->config()->chainId;
         if ($blockHeightContext === 0) {
             $chainId = bin2hex(str_repeat("\0", 32));
         }

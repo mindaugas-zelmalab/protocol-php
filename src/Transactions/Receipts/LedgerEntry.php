@@ -62,6 +62,14 @@ class LedgerEntry
      */
     public function __debugInfo(): array
     {
+        return $this->dump();
+    }
+
+    /**
+     * @return array
+     */
+    public function dump(): array
+    {
         return [
             "flag" => $this->flag,
             "hash160" => "0x" . bin2hex($this->hash160),

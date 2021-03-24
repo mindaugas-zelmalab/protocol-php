@@ -49,10 +49,22 @@ class LedgerEntries
      */
     public function dump(): array
     {
+        $batches = [];
+        /** @var array $batch */
+        foreach ($this->batches as $batch) {
+            $dump = [];
+            /** @var LedgerEntry $lE */
+            foreach ($batch as $lE) {
+                $dump[] = $lE->dump();
+            }
+
+            $batches[] = $dump;
+        }
+
         return [
             "batchCount" => $this->batchCount,
             "totalCount" => $this->leCount,
-            "batches" => $this->batches,
+            "batches" => $batches,
         ];
     }
 

@@ -10,6 +10,7 @@ use ForwardBlock\Protocol\Exception\ProtocolConfigException;
  * Class Config
  * @package ForwardBlock\Protocol
  * @property-read string $chainId
+ * @property-read int $forkId
  * @property-read int $accountsPrefix
  * @property-read string $fancyPrefix
  * @property-read int $fancyPrefixLen
@@ -20,6 +21,8 @@ class Config
 {
     /** @var string */
     private string $chainId;
+    /** @var int */
+    private int $forkId;
     /** @var int */
     private int $accountsPrefix;
     /** @var string */
@@ -45,6 +48,14 @@ class Config
         }
 
         $this->chainId = $chainId;
+
+        // Fork Id
+        $forkId = $args["forkId"];
+        if (!is_int($forkId) || $forkId < 0 || $forkId > 0xff) {
+            throw new ProtocolConfigException('Invalid fork id');
+        }
+
+        $this->forkId = $forkId;
 
         // Account Prefix
         $accPrefix = $args["accountsPrefix"];

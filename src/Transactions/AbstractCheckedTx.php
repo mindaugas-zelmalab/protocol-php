@@ -41,7 +41,8 @@ abstract class AbstractCheckedTx
         // Signatures Verification
         $signatures = $tx->signatures();
         $reqSigns = $p->accounts()->sigRequiredCount($sender);
-        $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId)->base16(), ...$signatures);
+        $forkIdHeightContext = $p->getForkId($blockHeightContext);
+        $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId, $forkIdHeightContext)->base16(), ...$signatures);
         if ($reqSigns > $verifiedSigns) {
             throw new CheckTxException(
                 sprintf('Required %d signatures, verified %d', $reqSigns, $verifiedSigns),

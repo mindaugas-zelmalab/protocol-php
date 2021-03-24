@@ -65,10 +65,11 @@ abstract class AbstractBlock
 
     /**
      * @param string|null $chainId
+     * @param int|null $forkId
      * @return Binary
      * @throws BlockEncodeException
      */
-    public function hashPreImage(?string $chainId = null): Binary
+    public function hashPreImage(?string $chainId = null, ?int $forkId = null): Binary
     {
         if ($chainId) {
             if (!Validator::isValidChainId($chainId)) {
@@ -80,8 +81,19 @@ abstract class AbstractBlock
             $chainId = $this->p->config()->chainId;
         }
 
+        if (is_int($forkId)) {
+            if ($forkId < 0 || $forkId > 0xff) {
+                throw new BlockEncodeException('Cannot generate hashPreImage; Invalid fork id');
+            }
+        }
+
+        if (!is_int($forkId)) {
+            $forkId = $this->p->config()->forkId;
+        }
+
         $raw = $this->serialize(false)->copy()
-            ->prepend(hex2bin($chainId));
+            ->prepend(hex2bin($chainId))
+            ->prepend(UInts::Encode_UInt1LE($forkId));
 
         return $this->p->hash256($raw)->readOnly(true);
     }

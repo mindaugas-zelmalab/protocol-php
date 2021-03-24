@@ -63,6 +63,12 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     abstract public function isEnabledTxFlag(AbstractTxFlag $f, int $blockHeightContext): bool;
 
     /**
+     * @param int $blockHeightContext
+     * @return int
+     */
+    abstract public function getForkId(int $blockHeightContext): int;
+
+    /**
      * @return string
      */
     public function chainName(): string

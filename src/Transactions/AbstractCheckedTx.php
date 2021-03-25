@@ -18,6 +18,8 @@ abstract class AbstractCheckedTx
     /** @var AbstractTxReceipt */
     protected AbstractTxReceipt $receipt;
     /** @var int */
+    protected int $totalSigns;
+    /** @var int */
     protected int $requiredSigns;
     /** @var int */
     protected int $verifiedSigns;
@@ -48,6 +50,7 @@ abstract class AbstractCheckedTx
             throw new CheckTxException('Transaction has no signatures', CheckTxException::ERR_UNSIGNED);
         }
 
+        $this->totalSigns = count($signatures);
         $this->requiredSigns = $p->accounts()->sigRequiredCount($sender);
         $forkIdHeightContext = $p->getForkId($blockHeightContext);
         $this->verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId, $forkIdHeightContext)->base16(), ...$signatures);
@@ -93,6 +96,14 @@ abstract class AbstractCheckedTx
     public function requiredSignsCount(): int
     {
         return $this->requiredSigns;
+    }
+
+    /**
+     * @return int
+     */
+    public function totalSignsCount(): int
+    {
+        return $this->totalSigns;
     }
 
     /**

@@ -16,7 +16,7 @@ use ForwardBlock\Protocol\Validator;
  * Class AbstractPreparedTx
  * @package ForwardBlock\Protocol\Transactions
  */
-abstract class AbstractPreparedTx extends AbstractTx
+abstract class AbstractPreparedTx extends AbstractTx implements PreparedOrCheckedTx
 {
     /** @var Binary */
     protected Binary $hash;

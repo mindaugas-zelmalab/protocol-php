@@ -12,7 +12,7 @@ use ForwardBlock\Protocol\Exception\VerifySignaturesException;
  * Class AbstractCheckedTx
  * @package ForwardBlock\Protocol\Transactions
  */
-abstract class AbstractCheckedTx
+abstract class AbstractCheckedTx implements PreparedOrCheckedTx
 {
     /** @var AbstractPreparedTx */
     protected AbstractPreparedTx $tx;

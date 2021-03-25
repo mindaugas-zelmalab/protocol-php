@@ -5,9 +5,7 @@ namespace ForwardBlock\Protocol\KeyPair;
 
 use Comely\DataTypes\Buffer\Base16;
 use Comely\DataTypes\Buffer\Binary;
-use ForwardBlock\Protocol\Base58Check;
 use ForwardBlock\Protocol\Exception\KeyPairException;
-use ForwardBlock\Protocol\Math\UInts;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use FurqanSiddiqui\BIP32\ECDSA\Curves;
 use FurqanSiddiqui\BIP32\Extend\PrivateKeyInterface;
@@ -96,20 +94,7 @@ class PublicKey extends \FurqanSiddiqui\BIP32\KeyPair\PublicKey
             return $this->address;
         }
 
-        $bytes = $this->getHash160();
-        $protocolConfig = $this->protocol->config();
-        $prefix = $protocolConfig->accountsPrefix;
-        if ($prefix > 0) {
-            $bytes = bin2hex(UInts::Encode_UInt1LE($prefix)) . $bytes;
-        }
-
-        $base58Check = Base58Check::getInstance();
-        $addr = $base58Check->encode($bytes)->value();
-        if ($protocolConfig->fancyPrefixLen) {
-            $addr = $protocolConfig->fancyPrefix . $addr;
-        }
-
-        $this->address = $addr;
+        $this->address = $this->protocol->accounts()->hash160ToAddress($this->getHash160());
         return $this->address;
     }
 }

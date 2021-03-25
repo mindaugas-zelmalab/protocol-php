@@ -9,7 +9,6 @@ use ForwardBlock\Protocol\Exception\BlockEncodeException;
 use ForwardBlock\Protocol\Exception\BlockForgeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\KeyPair\PublicKey;
-use ForwardBlock\Protocol\Transactions\AbstractCheckedTx;
 use ForwardBlock\Protocol\Validator;
 
 /**
@@ -20,8 +19,6 @@ abstract class AbstractBlockForge extends AbstractBlock
 {
     /** @var PublicKey|null */
     protected ?PublicKey $forgerPubKey = null;
-    /** @var array */
-    protected array $bodyTxs = [];
 
     /**
      * BlockForge constructor.
@@ -82,19 +79,6 @@ abstract class AbstractBlockForge extends AbstractBlock
 
         $this->signs[] = $sign;
         return $this;
-    }
-
-    /**
-     * @param AbstractCheckedTx $tx
-     * @throws BlockForgeException
-     */
-    public function appendTx(AbstractCheckedTx $tx): void
-    {
-        if ($tx->rawReceipt()->isFinalised()) {
-            throw new BlockForgeException('Tx with final receipt cannot be appended');
-        }
-
-        $this->bodyTxs[] = $tx;
     }
 
     /**

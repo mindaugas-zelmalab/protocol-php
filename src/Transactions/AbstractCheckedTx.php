@@ -17,6 +17,10 @@ abstract class AbstractCheckedTx
     protected AbstractPreparedTx $tx;
     /** @var AbstractTxReceipt */
     protected AbstractTxReceipt $receipt;
+    /** @var int */
+    protected int $requiredSigns;
+    /** @var int */
+    protected int $verifiedSigns;
 
     /**
      * AbstractCheckedTx constructor.
@@ -44,12 +48,12 @@ abstract class AbstractCheckedTx
             throw new CheckTxException('Transaction has no signatures', CheckTxException::ERR_UNSIGNED);
         }
 
-        $reqSigns = $p->accounts()->sigRequiredCount($sender);
+        $this->requiredSigns = $p->accounts()->sigRequiredCount($sender);
         $forkIdHeightContext = $p->getForkId($blockHeightContext);
-        $verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId, $forkIdHeightContext)->base16(), ...$signatures);
-        if ($reqSigns > $verifiedSigns) {
+        $this->verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId, $forkIdHeightContext)->base16(), ...$signatures);
+        if ($this->requiredSigns > $this->verifiedSigns) {
             throw new CheckTxException(
-                sprintf('Required %d signatures, verified %d', $reqSigns, $verifiedSigns),
+                sprintf('Required %d signatures, verified %d', $this->requiredSigns, $this->verifiedSigns),
                 CheckTxException::ERR_SIGNATURES
             );
         }
@@ -73,6 +77,22 @@ abstract class AbstractCheckedTx
 
             throw new CheckTxException('Failed to generate transaction raw receipt', CheckTxException::ERR_RECEIPT);
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function verifiedSignsCount(): int
+    {
+        return $this->verifiedSigns;
+    }
+
+    /**
+     * @return int
+     */
+    public function requiredSignsCount(): int
+    {
+        return $this->requiredSigns;
     }
 
     /**

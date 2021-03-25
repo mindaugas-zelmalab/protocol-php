@@ -9,6 +9,7 @@ use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Exception\BlockDecodeException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\Math\UInts;
+use ForwardBlock\Protocol\Transactions\AbstractPreparedTx;
 use ForwardBlock\Protocol\Transactions\Transaction;
 use ForwardBlock\Protocol\Validator;
 
@@ -197,6 +198,58 @@ class Block extends AbstractBlock
         if ($read->remaining()) {
             throw new BlockDecodeException('Block byte reader has excess bytes');
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo(): array
+    {
+        return $this->array();
+    }
+
+    /**
+     * @return array
+     */
+    public function array(): array
+    {
+        $signs = [];
+        /** @var Signature $sign */
+        foreach ($this->signs as $sign) {
+            $signs[] = [
+                "r" => $sign->r()->hexits(true),
+                "s" => $sign->s()->hexits(true),
+                "v" => $sign->v(),
+            ];
+        }
+
+        // Transactions
+        $transactions = [];
+        $index = 0;
+        /** @var AbstractPreparedTx $tx */
+        foreach ($this->txs->all() as $tx) {
+            $transactions[] = [
+                "tx" => $tx->array(),
+                "receipt" => $this->txsReceipts->index($index)->dump(),
+            ];
+        }
+
+        return [
+            "hash" => $this->hash->base16()->hexits(true),
+            "version" => $this->version,
+            "timeStamp" => $this->timeStamp,
+            "prevBlockId" => "0x" . bin2hex($this->prevBlockId),
+            "txCount" => $this->txCount,
+            "totalIn" => $this->totalIn,
+            "totalOut" => $this->totalOut,
+            "totalFee" => $this->totalFee,
+            "forger" => $this->forger,
+            "signs" => $signs,
+            "merkleTx" => $this->merkleTx,
+            "merkleTxReceipts" => $this->merkleTxReceipts,
+            "bodySize" => $this->bodySize,
+            "body" => $transactions
+        ];
     }
 
     /**

@@ -59,9 +59,21 @@ class PrivateKey extends \FurqanSiddiqui\BIP32\KeyPair\PrivateKey
             $curve = $this->p->secp256k1();
             $signed = $curve->sign($this->privateKey, $msgHash);
             $v = $this->p->secp256k1()->findRecoveryId($this->publicKey()->getEllipticCurvePubKeyObj(), $signed, $msgHash, true);
-            return new Signature($signed->r(), $signed->s(), $v);
+
+            return new Signature($this->nullPadded32($signed->r()), $this->nullPadded32($signed->s()), $v);
         } catch (\Exception $e) {
             throw new SignMessageException(sprintf('Failed to sign message; [%s] %s', get_class($e), $e->getMessage()));
         }
+    }
+
+    /**
+     * @param Base16 $value
+     * @return Base16
+     */
+    private function nullPadded32(Base16 $value): Base16
+    {
+        $value = $value->binary()->raw();
+        $len = strlen($value);
+        return new Base16(bin2hex(str_repeat("\0", (32 - $len)) . $value));
     }
 }

@@ -58,7 +58,7 @@ class LedgerFlag
     {
         return [
             "dec" => $this->dec,
-            "hex" => "0x" . bin2hex(UInts::Encode_UInt2LE($this->dec)),
+            "hex" => bin2hex(UInts::Encode_UInt2LE($this->dec)),
             "isCredit" => $this->isCredit,
             "isFee" => $this->isFee,
         ];

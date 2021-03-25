@@ -6,6 +6,7 @@ namespace ForwardBlock\Protocol\Accounts;
 use Comely\DataTypes\Buffer\Base16;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Base58Check;
+use ForwardBlock\Protocol\Exception\VerifySignaturesException;
 use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
 use ForwardBlock\Protocol\KeyPair\PublicKey;
 use ForwardBlock\Protocol\Math\UInts;
@@ -56,11 +57,13 @@ class AccountsProto
      * @param Base16 $msgHash
      * @param Signature ...$signatures
      * @return int
+     * @throws VerifySignaturesException
      */
     public function verifyAllSignatures(ChainAccountInterface $acc, Base16 $msgHash, Signature ...$signatures): int
     {
         $secp256k1 = $this->p->secp256k1();
         $publicKeys = $acc->getAllPublicKeys();
+        $verifiedPubKeys = [];
 
         // Check each signature
         $verified = 0;
@@ -71,10 +74,21 @@ class AccountsProto
              */
             foreach ($publicKeys as $pubIn => $pubKey) {
                 try {
+                    $pubKeyCompressed = strtolower($pubKey->compressed()->hexits(false));
                     $pub = $secp256k1->recoverPublicKeyFromSignature($signature, $msgHash, $signature->v());
-                    if ($pub->getCompressed()->hexits(false) === $pubKey->compressed()->hexits(false)) {
+                    if ($pub->getCompressed()->hexits(false) === $pubKeyCompressed) {
+                        if (in_array($pubKeyCompressed, $verifiedPubKeys)) {
+                            throw new VerifySignaturesException(
+                                'Repeating public key in verified signatures',
+                                VerifySignaturesException::REPEATED_PUB_KEY
+                            );
+                        }
+
+                        $verifiedPubKeys[] = $pubKeyCompressed;
                         $verified++;
                     }
+                } catch (VerifySignaturesException $e) {
+                    throw $e;
                 } catch (\Exception $e) {
                 }
             }

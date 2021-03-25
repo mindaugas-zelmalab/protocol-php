@@ -6,6 +6,7 @@ namespace ForwardBlock\Protocol\Transactions;
 use ForwardBlock\Protocol\AbstractProtocolChain;
 use ForwardBlock\Protocol\Accounts\ChainAccountInterface;
 use ForwardBlock\Protocol\Exception\CheckTxException;
+use ForwardBlock\Protocol\Exception\VerifySignaturesException;
 
 /**
  * Class AbstractCheckedTx
@@ -53,7 +54,13 @@ abstract class AbstractCheckedTx
         $this->totalSigns = count($signatures);
         $this->requiredSigns = $p->accounts()->sigRequiredCount($sender);
         $forkIdHeightContext = $p->getForkId($blockHeightContext);
-        $this->verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId, $forkIdHeightContext)->base16(), ...$signatures);
+
+        try {
+            $this->verifiedSigns = $p->accounts()->verifyAllSignatures($sender, $tx->hashPreImage($chainId, $forkIdHeightContext)->base16(), ...$signatures);
+        } catch (VerifySignaturesException $e) {
+            throw new CheckTxException($e->getMessage(), CheckTxException::ERR_SIGNATURES);
+        }
+
         if ($this->requiredSigns > $this->verifiedSigns) {
             throw new CheckTxException(
                 sprintf('Required %d signatures, verified %d', $this->requiredSigns, $this->verifiedSigns),

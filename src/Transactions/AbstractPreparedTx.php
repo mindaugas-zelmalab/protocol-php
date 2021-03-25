@@ -218,6 +218,12 @@ abstract class AbstractPreparedTx extends AbstractTx
     }
 
     /**
+     * @param int $blockHeightContext
+     * @return AbstractCheckedTx
+     */
+    abstract public function checkout(int $blockHeightContext): AbstractCheckedTx;
+
+    /**
      * @return array
      */
     public function __debugInfo(): array

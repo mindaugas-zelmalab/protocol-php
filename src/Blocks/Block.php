@@ -165,7 +165,7 @@ class Block extends AbstractBlock
                 // Step 15.2
                 $serTx = $read->next($serTxLen);
                 try {
-                    $blockTx = Transaction::Decode($this->p, new Binary($serTx));
+                    $blockTx = Transaction::DecodeAs($this->p, new Binary($serTx));
                     $this->txs->append($blockTx);
                 } catch (\Exception $e) {
                     if ($this->p->isDebug()) {

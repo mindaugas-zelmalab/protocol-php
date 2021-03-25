@@ -38,7 +38,7 @@ abstract class AbstractBlockForge extends AbstractBlock
             throw new BlockForgeException('PrevBlockHash must be precisely 32 bytes');
         }
 
-        if ($p < 0 || $p > 0xff) {
+        if ($ver < 0 || $ver > 0xff) {
             throw new BlockForgeException('Invalid block version');
         }
 

@@ -86,6 +86,7 @@ class AccountsProto
 
                         $verifiedPubKeys[] = $pubKeyCompressed;
                         $verified++;
+                        break;
                     }
                 } catch (VerifySignaturesException $e) {
                     throw $e;

@@ -72,7 +72,7 @@ class LedgerEntry
     {
         return [
             "flag" => $this->flag->dump(),
-            "hash160" => "0x" . bin2hex($this->hash160),
+            "hash160" => bin2hex($this->hash160),
             "amount" => $this->amount,
             "asset" => $this->asset,
             "applicable" => $this->applicable,

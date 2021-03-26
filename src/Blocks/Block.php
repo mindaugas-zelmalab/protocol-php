@@ -63,14 +63,20 @@ class Block extends AbstractBlock
         $read = $bytes->read();
         $read->throwUnderflowEx();
 
-        // Step 1
-        $this->version = UInts::Decode_UInt1LE($read->first(1));
-        switch ($this->version) {
-            case 1:
-                $this->decodeBlockV1($read, $heightContext);
-                break;
-            default:
-                throw new BlockDecodeException(sprintf('Unsupported block version %d', $this->version));
+        try {
+            // Step 1
+            $this->version = UInts::Decode_UInt1LE($read->first(1));
+            switch ($this->version) {
+                case 1:
+                    $this->decodeBlockV1($read, $heightContext);
+                    break;
+                default:
+                    throw new BlockDecodeException(sprintf('Unsupported block version %d', $this->version));
+            }
+        } catch (BlockDecodeException $e) {
+            throw $e;
+        } catch (\Throwable $t) {
+            throw BlockDecodeException::Incomplete($this, sprintf('[%s][%s]: %s', get_class($t), $t->getCode(), $t->getMessage()));
         }
     }
 
@@ -84,7 +90,7 @@ class Block extends AbstractBlock
         // Step 2
         $timeStamp = UInts::Decode_UInt4LE($read->next(4));
         if (!Validator::isValidEpoch($timeStamp)) {
-            throw new BlockDecodeException('Invalid timeStamp');
+            throw BlockDecodeException::Incomplete($this, 'Invalid timeStamp');
         }
 
         $this->timeStamp = $timeStamp;
@@ -110,7 +116,7 @@ class Block extends AbstractBlock
         // Step 9
         $signs = UInts::Decode_UInt1LE($read->next(1));
         if ($signs > 5) {
-            throw new BlockDecodeException('Blocks cannot have more than 5 signatures');
+            throw BlockDecodeException::Incomplete($this, 'Blocks cannot have more than 5 signatures');
         }
 
         if ($signs > 0) {
@@ -121,7 +127,8 @@ class Block extends AbstractBlock
                     $signV = UInts::Decode_UInt1LE($read->next(1));
                     $sign = new Signature(new Base16(bin2hex($signR)), new Base16(bin2hex($signS)), $signV);
                 } catch (\Exception $e) {
-                    throw new BlockDecodeException(sprintf('Error with signature %d; (%s) %s', $i, get_class($e), $e->getMessage()));
+                    throw BlockDecodeException::Incomplete($this,
+                        sprintf('Error with signature %d; (%s) %s', $i, get_class($e), $e->getMessage()));
                 }
 
                 $this->signs[] = $sign;
@@ -141,11 +148,11 @@ class Block extends AbstractBlock
         if (!$this->txCount) {
             $nullMerkleTree = str_repeat("\0", 32);
             if ($this->merkleTx !== $nullMerkleTree) {
-                throw new BlockDecodeException('Block merkle tx root must be all NULL bytes with txCount 0');
+                throw BlockDecodeException::Incomplete($this, 'Block merkle tx root must be all NULL bytes with txCount 0');
             }
 
             if ($this->merkleTxReceipts !== $nullMerkleTree) {
-                throw new BlockDecodeException('Block merkle tx receipts root must be all NULL bytes with txCount 0');
+                throw BlockDecodeException::Incomplete($this, 'Block merkle tx receipts root must be all NULL bytes with txCount 0');
             }
         }
 
@@ -154,7 +161,7 @@ class Block extends AbstractBlock
 
         // Step 14
         if ($read->next(1) !== "\0") {
-            throw new BlockDecodeException('Invalid block headers separator');
+            throw BlockDecodeException::Incomplete($this, 'Invalid block headers separator');
         }
 
         // Step 15
@@ -173,7 +180,7 @@ class Block extends AbstractBlock
                         trigger_error(sprintf('[%s][%s] %s', get_class($e), $e->getCode(), $e->getMessage()), E_USER_WARNING);
                     }
 
-                    throw new BlockDecodeException(sprintf('Failed to decode transaction at index %d', $i));
+                    throw BlockDecodeException::Incomplete($this, sprintf('Failed to decode transaction at index %d', $i));
                 }
 
                 // Step 15.3
@@ -189,14 +196,14 @@ class Block extends AbstractBlock
                         trigger_error(sprintf('[%s][%s] %s', get_class($e), $e->getCode(), $e->getMessage()), E_USER_WARNING);
                     }
 
-                    throw new BlockDecodeException(sprintf('Failed to decode tx receipt at index %d', $i));
+                    throw BlockDecodeException::Incomplete($this, sprintf('Failed to decode tx receipt at index %d', $i));
                 }
             }
         }
 
         // Check remaining bytes?
         if ($read->remaining()) {
-            throw new BlockDecodeException('Block byte reader has excess bytes');
+            throw BlockDecodeException::Incomplete($this, 'Block byte reader has excess bytes');
         }
     }
 

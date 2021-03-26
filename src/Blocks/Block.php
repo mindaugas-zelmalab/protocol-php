@@ -279,8 +279,8 @@ class Block extends AbstractBlock
 
                 $transactions[] = [
                     "hash" => $rawTxHash->base16()->hexits(false),
-                    "tx" => $rawTx,
-                    "receipt" => $rawTxR,
+                    "tx" => bin2hex($rawTx),
+                    "receipt" => $rawTxR ? bin2hex($rawTxR) : null,
                 ];
 
                 if (!$rawTxR) { // Break so receipts don't get mixed up next!

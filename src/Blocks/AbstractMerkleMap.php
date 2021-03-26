@@ -51,6 +51,15 @@ abstract class AbstractMerkleMap implements \Iterator, \Countable
 
     /**
      * @param int $dec
+     * @return bool
+     */
+    public function hasIndex(int $dec): bool
+    {
+        return isset($this->tree[$dec]);
+    }
+
+    /**
+     * @param int $dec
      * @return mixed
      */
     public function index(int $dec): object

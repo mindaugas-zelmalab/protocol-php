@@ -257,13 +257,25 @@ class Block extends AbstractBlock
 
         // Transactions
         $transactions = [];
-        $index = 0;
+        $index = -1;
         /** @var AbstractPreparedTx $tx */
         foreach ($this->txs->all() as $tx) {
-            $transactions[] = [
-                "tx" => $tx->array(),
-                "receipt" => $this->txsReceipts->index($index)->dump(),
-            ];
+            $index++;
+
+            if ($this->txsReceipts->hasIndex($index)) {
+                $transactions[] = [
+                    "tx" => $tx->array(),
+                    "receipt" => $this->txsReceipts->index($index)->dump(),
+                ];
+            } else {
+                $transactions[] = [
+                    "tx" => $tx->array(),
+                    "receipt" => null,
+                ];
+
+                // Break so receipts don't get mixed up next!
+                break;
+            }
         }
 
         $partialBlock["transactions"] = $transactions;

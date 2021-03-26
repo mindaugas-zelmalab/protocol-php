@@ -20,6 +20,16 @@ class LedgerEntries
     private int $leCount = 0;
 
     /**
+     * @return void
+     */
+    public function purge(): void
+    {
+        $this->batches = [];
+        $this->batchCount = 0;
+        $this->leCount = 0;
+    }
+
+    /**
      * @param LedgerEntry ...$entries
      */
     public function addBatch(LedgerEntry ...$entries)

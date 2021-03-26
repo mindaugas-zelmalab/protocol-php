@@ -248,7 +248,7 @@ class Block extends AbstractBlock
         foreach ($partialBlockProps as $prop) {
             if (isset($this->$prop)) {
                 $value = $this->$prop;
-                if (in_array($prop, ["forger", "merkleTx", "merkleTxReceipts"])) {
+                if (in_array($prop, ["prevBlockId", "forger", "merkleTx", "merkleTxReceipts"])) {
                     $value = bin2hex($value);
                 }
 

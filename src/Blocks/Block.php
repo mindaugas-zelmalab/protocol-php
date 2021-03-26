@@ -228,8 +228,9 @@ class Block extends AbstractBlock
     public function array(bool $getRawTxs): array
     {
         $partialBlock = [];
+        $partialBlock["hash"] = $this->hash->base16()->hexits(false);
+
         $partialBlockProps = [
-            "hash",
             "version",
             "timeStamp",
             "prevBlockId",
@@ -247,7 +248,7 @@ class Block extends AbstractBlock
         foreach ($partialBlockProps as $prop) {
             if (isset($this->$prop)) {
                 $value = $this->$prop;
-                if (in_array($prop, ["hash", "forger", "merkleTx", "merkleTxReceipts"])) {
+                if (in_array($prop, ["forger", "merkleTx", "merkleTxReceipts"])) {
                     $value = bin2hex($value);
                 }
 
@@ -261,8 +262,8 @@ class Block extends AbstractBlock
             /** @var Signature $sign */
             foreach ($this->signs as $sign) {
                 $partialBlock["signs"][] = [
-                    "r" => $sign->r()->hexits(true),
-                    "s" => $sign->s()->hexits(true),
+                    "r" => $sign->r()->hexits(false),
+                    "s" => $sign->s()->hexits(false),
                     "v" => $sign->v(),
                 ];
             }

@@ -213,14 +213,39 @@ class Block extends AbstractBlock
      */
     public function array(): array
     {
-        $signs = [];
-        /** @var Signature $sign */
-        foreach ($this->signs as $sign) {
-            $signs[] = [
-                "r" => $sign->r()->hexits(true),
-                "s" => $sign->s()->hexits(true),
-                "v" => $sign->v(),
-            ];
+        $partialBlock = [];
+        $partialBlockProps = [
+            "version",
+            "timeStamp",
+            "prevBlockId",
+            "txCount",
+            "totalIn",
+            "totalOut",
+            "totalFee",
+            "forger",
+            "reward",
+            "merkleTx",
+            "merkleTxReceipts",
+            "bodySize"
+        ];
+
+        foreach ($partialBlockProps as $prop) {
+            if (isset($this->$prop)) {
+                $partialBlock[$prop] = $this->$prop;
+            }
+        }
+
+        // Signatures
+        if (isset($this->signs) && $this->signs) {
+            $partialBlock["signs"] = [];
+            /** @var Signature $sign */
+            foreach ($this->signs as $sign) {
+                $partialBlock["signs"][] = [
+                    "r" => $sign->r()->hexits(true),
+                    "s" => $sign->s()->hexits(true),
+                    "v" => $sign->v(),
+                ];
+            }
         }
 
         // Transactions
@@ -234,22 +259,8 @@ class Block extends AbstractBlock
             ];
         }
 
-        return [
-            "hash" => $this->hash->base16()->hexits(true),
-            "version" => $this->version,
-            "timeStamp" => $this->timeStamp,
-            "prevBlockId" => "0x" . bin2hex($this->prevBlockId),
-            "txCount" => $this->txCount,
-            "totalIn" => $this->totalIn,
-            "totalOut" => $this->totalOut,
-            "totalFee" => $this->totalFee,
-            "forger" => $this->forger,
-            "signs" => $signs,
-            "merkleTx" => $this->merkleTx,
-            "merkleTxReceipts" => $this->merkleTxReceipts,
-            "bodySize" => $this->bodySize,
-            "body" => $transactions
-        ];
+        $partialBlock["transactions"] = $transactions;
+        return $partialBlock;
     }
 
     /**

@@ -26,7 +26,7 @@ class BlockDecodeException extends BlocksException
     {
         parent::__construct($message, $code, $previous);
         if ($block) {
-            $this->incompleteBlocks = $block->array();
+            $this->incompleteBlocks = $block->array(true);
         }
     }
 

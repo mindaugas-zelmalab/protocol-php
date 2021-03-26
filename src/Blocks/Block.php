@@ -23,6 +23,10 @@ class Block extends AbstractBlock
     private Binary $hash;
     /** @var Binary */
     private Binary $raw;
+    /** @var array */
+    private array $rawTxs = [];
+    /** @var array */
+    private array $rawTxReceipts = [];
 
     /**
      * @param AbstractProtocolChain $p
@@ -173,6 +177,7 @@ class Block extends AbstractBlock
                 // Step 15.2
                 $serTx = $read->next($serTxLen);
                 try {
+                    $this->rawTxs[] = $serTx;
                     $blockTx = Transaction::DecodeAs($this->p, new Binary($serTx));
                     $this->txs->append($blockTx);
                 } catch (\Exception $e) {
@@ -189,6 +194,7 @@ class Block extends AbstractBlock
                 // Step 15.4
                 $serTxR = $read->next($serTxRLen);
                 try {
+                    $this->rawTxReceipts[] = $serTxR;
                     $blockTxR = $this->p->txFlags()->get($blockTx->flag())->decodeReceipt($blockTx, new Binary($serTxR), $heightContext);
                     $this->txsReceipts->append($blockTxR);
                 } catch (\Exception $e) {
@@ -212,16 +218,18 @@ class Block extends AbstractBlock
      */
     public function __debugInfo(): array
     {
-        return $this->array();
+        return $this->array(true);
     }
 
     /**
+     * @param bool $getRawTxs
      * @return array
      */
-    public function array(): array
+    public function array(bool $getRawTxs): array
     {
         $partialBlock = [];
         $partialBlockProps = [
+            "hash",
             "version",
             "timeStamp",
             "prevBlockId",
@@ -239,7 +247,7 @@ class Block extends AbstractBlock
         foreach ($partialBlockProps as $prop) {
             if (isset($this->$prop)) {
                 $value = $this->$prop;
-                if (in_array($prop, ["forger", "merkleTx", "merkleTxReceipts"])) {
+                if (in_array($prop, ["hash", "forger", "merkleTx", "merkleTxReceipts"])) {
                     $value = bin2hex($value);
                 }
 
@@ -262,24 +270,36 @@ class Block extends AbstractBlock
 
         // Transactions
         $transactions = [];
-        $index = -1;
-        /** @var AbstractPreparedTx $tx */
-        foreach ($this->txs->all() as $tx) {
-            $index++;
+        if ($getRawTxs) {
+            for ($i = 0; $i < count($this->rawTxs); $i++) {
+                $rawTx = $this->rawTxs[$i];
+                $rawTxHash = $this->p->hash256(new Binary($rawTx));
+                $rawTxR = $this->rawTxReceipts[$i] ?? null;
 
-            if ($this->txsReceipts->hasIndex($index)) {
                 $transactions[] = [
-                    "tx" => $tx->array(),
-                    "receipt" => $this->txsReceipts->index($index)->dump(),
-                ];
-            } else {
-                $transactions[] = [
-                    "tx" => $tx->array(),
-                    "receipt" => null,
+                    "hash" => $rawTxHash->base16()->hexits(false),
+                    "tx" => $rawTx,
+                    "receipt" => $rawTxR,
                 ];
 
-                // Break so receipts don't get mixed up next!
-                break;
+                if (!$rawTxR) { // Break so receipts don't get mixed up next!
+                    break;
+                }
+            }
+        } else {
+            $tI = -1;
+            /** @var AbstractPreparedTx $tx */
+            foreach ($this->txs->all() as $tx) {
+                $tI++;
+                $txR = $this->txsReceipts->hasIndex($tI) ? $this->txsReceipts->index($tI) : null;
+                $transactions[] = [
+                    "tx" => $tx->array(),
+                    "receipt" => $txR,
+                ];
+
+                if (!$txR) { // Break so receipts don't get mixed up next!
+                    break;
+                }
             }
         }
 

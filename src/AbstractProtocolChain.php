@@ -6,6 +6,9 @@ namespace ForwardBlock\Protocol;
 use Comely\DataTypes\Buffer\Binary;
 use Comely\Utils\OOP\OOP;
 use ForwardBlock\Protocol\Accounts\AccountsProto;
+use ForwardBlock\Protocol\Blocks\AbstractBlockForge;
+use ForwardBlock\Protocol\Blocks\Block;
+use ForwardBlock\Protocol\Blocks\ValidatedBlockInterface;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 use ForwardBlock\Protocol\KeyPair\KeyPairFactory;
 use ForwardBlock\Protocol\Transactions\AbstractTxFlag;
@@ -67,6 +70,21 @@ abstract class AbstractProtocolChain implements ProtocolConstants
      * @return int
      */
     abstract public function getForkId(int $blockHeightContext): int;
+
+    /**
+     * @param string $prevBlock
+     * @param int $ver
+     * @param int $epoch
+     * @return AbstractBlockForge
+     */
+    abstract public function createBlock(string $prevBlock, int $ver, int $epoch): AbstractBlockForge;
+
+    /**
+     * @param Block $block
+     * @param int $heightContext
+     * @return ValidatedBlockInterface
+     */
+    abstract public function validateBlock(Block $block, int $heightContext): ValidatedBlockInterface;
 
     /**
      * @return string

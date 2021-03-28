@@ -72,21 +72,6 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     abstract public function getForkId(int $blockHeightContext): int;
 
     /**
-     * @param string $prevBlock
-     * @param int $ver
-     * @param int $epoch
-     * @return AbstractBlockForge
-     */
-    abstract public function createBlock(string $prevBlock, int $ver, int $epoch): AbstractBlockForge;
-
-    /**
-     * @param Block $block
-     * @param int $heightContext
-     * @return ValidatedBlockInterface
-     */
-    abstract public function validateBlock(Block $block, int $heightContext): ValidatedBlockInterface;
-
-    /**
      * @return string
      */
     public function chainName(): string

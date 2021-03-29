@@ -10,6 +10,12 @@ namespace ForwardBlock\Protocol\Accounts;
 interface ChainAccountInterface
 {
     /**
+     * Must return hash160 in BASE16!
+     * @return string
+     */
+    public function getHash160(): string;
+
+    /**
      * @return array
      */
     public function getAllPublicKeys(): array;

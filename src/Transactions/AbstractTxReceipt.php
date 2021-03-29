@@ -154,6 +154,11 @@ abstract class AbstractTxReceipt
     abstract protected function generateLedgerEntries(): void;
 
     /**
+     * This method is called when transaction receipt is being finalised
+     */
+    abstract public function finalizeCallback(): void;
+
+    /**
      * This method is called when transaction is being applied
      */
     abstract public function applyCallback(): void;

@@ -154,6 +154,16 @@ abstract class AbstractTxReceipt
     abstract protected function generateLedgerEntries(): void;
 
     /**
+     * This method is called when transaction is being applied
+     */
+    abstract public function applyCallback(): void;
+
+    /**
+     * This method is called when transaction is being undone
+     */
+    abstract public function undoCallback(): void;
+
+    /**
      * @return bool
      */
     public function isFinalised(): bool

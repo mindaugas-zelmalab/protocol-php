@@ -6,11 +6,10 @@ namespace ForwardBlock\Protocol;
 use Comely\DataTypes\Buffer\Binary;
 use Comely\Utils\OOP\OOP;
 use ForwardBlock\Protocol\Accounts\AccountsProto;
-use ForwardBlock\Protocol\Blocks\AbstractBlockForge;
-use ForwardBlock\Protocol\Blocks\Block;
-use ForwardBlock\Protocol\Blocks\ValidatedBlockInterface;
 use ForwardBlock\Protocol\Exception\ProtocolConfigException;
 use ForwardBlock\Protocol\KeyPair\KeyPairFactory;
+use ForwardBlock\Protocol\KeyPair\PrivateKey\Signature;
+use ForwardBlock\Protocol\Math\UInts;
 use ForwardBlock\Protocol\Transactions\AbstractTxFlag;
 use ForwardBlock\Protocol\Transactions\TxFlags;
 use FurqanSiddiqui\ECDSA\Curves\Secp256k1;
@@ -171,5 +170,21 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     public function hash256(Binary $bin): Binary
     {
         return $bin->hash()->digest("sha256", 2);
+    }
+
+    /**
+     * @param Signature ...$signs
+     * @return Binary
+     */
+    public function serializeSignatures(Signature ...$signs): Binary
+    {
+        $ser = new Binary();
+        foreach ($signs as $sign) {
+            $ser->append($sign->r()->binary()->raw());
+            $ser->append($sign->s()->binary()->raw());
+            $ser->append(UInts::Encode_UInt1LE($sign->v()));
+        }
+
+        return $ser;
     }
 }

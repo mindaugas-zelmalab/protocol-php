@@ -22,15 +22,8 @@ trait TransferObjectsTrait
      */
     public function addTransfer(int $value, ?string $assetId = null): self
     {
-        if ($assetId) {
-            if (!Validator::isValidAssetId($assetId)) {
-                throw TxConstructException::Prop("transferObject.assetId", "Invalid asset identifier");
-            }
-
-            $reqPad = 8 - strlen($assetId);
-            if ($reqPad > 0) {
-                $assetId = str_pad($assetId, 8, "\0", STR_PAD_LEFT);
-            }
+        if ($assetId && !Validator::isValidAssetId($assetId)) {
+            throw TxConstructException::Prop("transferObject.assetId", "Invalid asset identifier");
         }
 
         if ($value < 0 || $value > UInts::MAX) {

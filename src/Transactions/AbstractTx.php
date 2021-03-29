@@ -141,15 +141,7 @@ abstract class AbstractTx
                 throw new TxEncodeException('Transaction with no recipient cannot have transfers');
             }
 
-            foreach ($this->transfers as $asset => $amount) {
-                $ser->append(UInts::Encode_UInt8LE($amount));
-                if ($asset) {
-                    $ser->append("\1");
-                    $ser->append($asset);
-                } else {
-                    $ser->append("\0");
-                }
-            }
+            $ser->append($this->serializeTransfers()->raw());
         }
 
         // Step 8
@@ -196,6 +188,25 @@ abstract class AbstractTx
 
         // Set Buffer into ReadOnly state
         $ser->readOnly(true);
+        return $ser;
+    }
+
+    /**
+     * @return Binary
+     */
+    public function serializeTransfers(): Binary
+    {
+        $ser = new Binary();
+        foreach ($this->transfers as $asset => $amount) {
+            $ser->append(UInts::Encode_UInt8LE($amount));
+            if ($asset) {
+                $ser->append("\1");
+                $ser->append(str_pad($asset, 8, "\0", STR_PAD_LEFT));
+            } else {
+                $ser->append("\0");
+            }
+        }
+
         return $ser;
     }
 }

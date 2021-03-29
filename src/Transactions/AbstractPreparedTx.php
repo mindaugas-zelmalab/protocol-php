@@ -163,7 +163,12 @@ abstract class AbstractPreparedTx extends AbstractTx implements PreparedOrChecke
                     throw TxDecodeException::Incomplete($this, sprintf('Invalid transfer.hasAsset flag at transfer index %d', $i));
                 }
 
-                $this->transfers[$assetId ?? null] = $amount;
+                $assetId = $assetId ?? null;
+                if (isset($this->transfers[$assetId])) {
+                    throw TxDecodeException::Incomplete($this, sprintf('Duplicate asset transfer at index %d', $i));
+                }
+
+                $this->transfers[$assetId] = $amount;
             }
         }
 

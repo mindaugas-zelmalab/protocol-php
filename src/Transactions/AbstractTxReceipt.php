@@ -156,7 +156,7 @@ abstract class AbstractTxReceipt
     /**
      * This method is called when transaction receipt is being finalised
      */
-    abstract public function finalizeCallback(): void;
+    abstract protected function finalizeCallback(): void;
 
     /**
      * This method is called when transaction is being applied

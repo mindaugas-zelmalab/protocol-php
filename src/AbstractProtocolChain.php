@@ -164,6 +164,16 @@ abstract class AbstractProtocolChain implements ProtocolConstants
     }
 
     /**
+     * @param \Throwable $t
+     */
+    public function debugError(\Throwable $t): void
+    {
+        if ($this->debug) {
+            trigger_error(sprintf('[%s][#%s] %s', get_class($t), $t->getCode(), $t->getMessage()));
+        }
+    }
+
+    /**
      * @param Binary $bin
      * @return Binary
      */

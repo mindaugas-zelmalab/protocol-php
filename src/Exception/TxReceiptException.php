@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace ForwardBlock\Protocol\Exception;
 
 /**
- * Class TxReceiptDecodeException
+ * Class TxReceiptException
  * @package ForwardBlock\Protocol\Exception
  */
-class TxReceiptDecodeException extends TxReceiptException
+class TxReceiptException extends TransactionsException
 {
 }

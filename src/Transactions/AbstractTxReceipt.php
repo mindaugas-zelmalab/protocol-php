@@ -177,7 +177,7 @@ abstract class AbstractTxReceipt
     /**
      * @param bool $applicableOnly
      */
-    protected function calculateLedgerEntries(bool $applicableOnly = false): void
+    public function calculateLedgerEntries(bool $applicableOnly = false): void
     {
         $this->totalIn = 0;
         $this->totalOut = 0;

@@ -284,6 +284,21 @@ abstract class AbstractTxReceipt
     }
 
     /**
+     * @param LedgerFlag $lF
+     * @param int $amount
+     * @param string|null $assetId
+     * @return LedgerEntry
+     */
+    public function createFeeEntry(LedgerFlag $lF, int $amount, ?string $assetId = null): LedgerEntry
+    {
+        if (!$lF->isFee()) {
+            throw new \InvalidArgumentException('LedgerFlag of non-fee type cannot be used with this method');
+        }
+
+        return new LedgerEntry($this->p, $this, $lF, str_repeat("\0", 20), $amount, $assetId);
+    }
+
+    /**
      * @param LedgerEntry ...$entries
      */
     public function registerLedgerEntriesBatch(LedgerEntry ...$entries): void

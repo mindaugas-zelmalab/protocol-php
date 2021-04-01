@@ -12,7 +12,6 @@ use ForwardBlock\Protocol\ProtocolConstants;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerEntries;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerEntry;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerFlag;
-use ForwardBlock\Protocol\Validation\ValidationContextInterface;
 
 /**
  * Class AbstractTxReceipt
@@ -168,11 +167,6 @@ abstract class AbstractTxReceipt
         // Make calculations
         $this->calculateLedgerEntries(false);
     }
-
-    /**
-     * @param ValidationContextInterface $vC
-     */
-    abstract public function finalizeInContext(ValidationContextInterface $vC): void;
 
     /**
      * This method MUST BE used to generate default fee ledger entries based on transaction's fee amount

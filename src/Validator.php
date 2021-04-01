@@ -111,11 +111,11 @@ class Validator
 
         $pubKeyLen = strlen($pubKeyStr);
         if (!in_array($pubKeyLen, $length)) {
-            throw new \LengthException(sprintf('Invalid %spublic key length, got %d bytes', $type, $pubKeyLen));
+            throw new \LengthException(sprintf('Invalid %s public key length, got %d bytes', $type, $pubKeyLen));
         }
 
         if (!in_array($pubKeyStr[0], $prefixes)) {
-            throw new \DomainException(sprintf('Invalid %spublic key prefix', $type));
+            throw new \DomainException(sprintf('Invalid %s public key prefix', $type));
         }
     }
 

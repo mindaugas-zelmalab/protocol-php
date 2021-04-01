@@ -25,12 +25,11 @@ class LedgerFlags
     /**
      * @param int $dec
      * @param bool $isCredit
-     * @param bool $isFeeFlag
      * @return $this
      */
-    public function append(int $dec, bool $isCredit, bool $isFeeFlag = false): self
+    public function append(int $dec, bool $isCredit): self
     {
-        $lF = new LedgerFlag($dec, $isCredit, $isFeeFlag);
+        $lF = new LedgerFlag($dec, $isCredit,);
         $this->flags[$dec] = $lF;
         $this->count++;
         return $this;

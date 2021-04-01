@@ -15,16 +15,13 @@ class LedgerFlag
     private int $dec;
     /** @var bool */
     private bool $isCredit;
-    /** @var bool */
-    private bool $isFee;
 
     /**
      * LedgerFlag constructor.
      * @param int $dec
      * @param bool $isCredit
-     * @param bool $isFee
      */
-    public function __construct(int $dec, bool $isCredit, bool $isFee)
+    public function __construct(int $dec, bool $isCredit)
     {
         if ($dec < 0 || $dec > 0xffff) {
             throw new \OutOfRangeException('Ledger flag cannot exceed 2 bytes');
@@ -34,13 +31,8 @@ class LedgerFlag
             throw new \DomainException('Cannot override existing ledger flag');
         }
 
-        if ($isFee && $isCredit) {
-            throw new \UnexpectedValueException('Fee flag cannot be of type credit');
-        }
-
         $this->dec = $dec;
         $this->isCredit = $isCredit;
-        $this->isFee = $isFee;
     }
 
     /**
@@ -60,7 +52,6 @@ class LedgerFlag
             "dec" => $this->dec,
             "hex" => bin2hex(UInts::Encode_UInt2LE($this->dec)),
             "isCredit" => $this->isCredit,
-            "isFee" => $this->isFee,
         ];
     }
 
@@ -83,8 +74,8 @@ class LedgerFlag
     /**
      * @return bool
      */
-    public function isFee(): bool
+    public function isDebit(): bool
     {
-        return $this->isFee;
+        return !$this->isCredit;
     }
 }

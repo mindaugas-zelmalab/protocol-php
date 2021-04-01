@@ -12,6 +12,7 @@ use ForwardBlock\Protocol\ProtocolConstants;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerEntries;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerEntry;
 use ForwardBlock\Protocol\Transactions\Receipts\LedgerFlag;
+use ForwardBlock\Protocol\Validation\ValidationContextInterface;
 
 /**
  * Class AbstractTxReceipt
@@ -32,6 +33,13 @@ abstract class AbstractTxReceipt
     protected Binary $data;
     /** @var LedgerEntries */
     protected LedgerEntries $ledgerEntries;
+
+    /** @var int */
+    protected int $totalIn;
+    /** @var int */
+    protected int $totalOut;
+    /** @var int */
+    protected int $totalFee;
 
     /**
      * @param AbstractProtocolChain $p
@@ -65,11 +73,16 @@ abstract class AbstractTxReceipt
 
         // Step 3
         $dataLen = UInts::Decode_UInt1LE($read->next(1));
-        if ($dataLen > 0) { // Step 2.1
+        if ($dataLen > 0) { // Step 3.1
             $receipt->data()->append($read->next($dataLen));
         }
 
-        // Step 4
+        // Step 4,5,6
+        $totalIn = UInts::Decode_UInt8LE($read->next(8));
+        $totalOut = UInts::Decode_UInt8LE($read->next(8));
+        $totalFee = UInts::Decode_UInt8LE($read->next(8));
+
+        // Step 7
         $leBatches = UInts::Decode_UInt1LE($read->next(1));
         if ($leBatches > 0) {
             for ($lB = 0; $lB < $leBatches; $lB++) {
@@ -107,6 +120,28 @@ abstract class AbstractTxReceipt
             }
         }
 
+        $receipt->calculateLedgerEntries(true);
+
+        // Validations
+        if ($receipt->totalIn() !== $totalIn) {
+            throw new TxReceiptDecodeException(
+                sprintf('Receipt total in "%d" does not match actual total in "%d"', $receipt->totalIn(), $totalIn)
+            );
+        }
+
+        if ($receipt->totalOut() !== $totalOut) {
+            throw new TxReceiptDecodeException(
+                sprintf('Receipt total in "%d" does not match actual total in "%d"', $receipt->totalOut(), $totalOut)
+            );
+        }
+
+        if ($receipt->totalFee() !== $totalFee) {
+            throw new TxReceiptDecodeException(
+                sprintf('Receipt total in "%d" does not match actual total in "%d"', $receipt->totalFee(), $totalFee)
+            );
+        }
+
+        // Return receipt
         return $receipt;
     }
 
@@ -124,8 +159,67 @@ abstract class AbstractTxReceipt
         $this->ledgerEntries = new LedgerEntries();
         $this->blockHeightContext = $blockHeightContext;
 
-        // Generate ledger entries here
+        // Generate default ledger entries; i.e. transaction's base fee
+        $this->defaultLedgerEntries();
+
+        // Generate ledger entries here; Based on Transaction's type/flag
         $this->generateLedgerEntries();
+
+        // Make calculations
+        $this->calculateLedgerEntries(false);
+    }
+
+    /**
+     * @param ValidationContextInterface $vC
+     */
+    abstract public function finalizeInContext(ValidationContextInterface $vC): void;
+
+    /**
+     * This method MUST BE used to generate default fee ledger entries based on transaction's fee amount
+     * @return void
+     */
+    abstract protected function defaultLedgerEntries(): void;
+
+    /**
+     * @param bool $applicableOnly
+     */
+    protected function calculateLedgerEntries(bool $applicableOnly = false): void
+    {
+        $this->totalIn = 0;
+        $this->totalOut = 0;
+        $this->totalFee = 0;
+
+        $batches = $this->ledgerEntries->batches();
+        if ($batches) {
+            foreach ($batches as $batch) {
+                /** @var LedgerEntry $ledgerEntry */
+                foreach ($batch as $ledgerEntry) {
+                    if ($ledgerEntry->asset()) {
+                        continue; // Ignore LEs with an asset
+                    }
+
+                    if ($applicableOnly && !$ledgerEntry->isApplicable()) {
+                        continue; // Ignore non-applicable ones
+                    }
+
+                    if ($ledgerEntry->flag()->isCredit()) {
+                        $this->totalOut = $ledgerEntry->amount();
+                    } else {
+                        $this->totalIn = $ledgerEntry->amount();
+                    }
+                }
+            }
+        }
+
+        $this->calculateTotalFee();
+    }
+
+    /**
+     * @return void
+     */
+    protected function calculateTotalFee(): void
+    {
+        $this->totalFee = $this->totalIn - $this->totalOut;
     }
 
     /**
@@ -145,6 +239,9 @@ abstract class AbstractTxReceipt
             "status" => $this->status,
             "data" => $this->data->raw(),
             "ledgerEntries" => $this->ledgerEntries->dump(),
+            "totalIn" => $this->totalIn,
+            "totalOut" => $this->totalOut,
+            "totalFee" => $this->totalFee,
         ];
     }
 
@@ -200,6 +297,30 @@ abstract class AbstractTxReceipt
     {
         $this->status = $code;
         return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function totalIn(): int
+    {
+        return $this->totalIn;
+    }
+
+    /**
+     * @return int
+     */
+    public function totalOut(): int
+    {
+        return $this->totalOut;
+    }
+
+    /**
+     * @return int
+     */
+    public function totalFee(): int
+    {
+        return $this->totalFee;
     }
 
     /**
@@ -268,6 +389,10 @@ abstract class AbstractTxReceipt
 
         $ser->append(UInts::Encode_UInt1LE($this->data->sizeInBytes));
         $ser->append($this->data);
+
+        $ser->append(UInts::Encode_UInt8LE($this->totalIn));
+        $ser->append(UInts::Encode_UInt8LE($this->totalOut));
+        $ser->append(UInts::Encode_UInt8LE($this->totalFee));
         return $ser;
     }
 
@@ -278,7 +403,7 @@ abstract class AbstractTxReceipt
      * @param string|null $assetId
      * @return LedgerEntry
      */
-    protected function createLedgerEntry(LedgerFlag $lF, string $hash160, int $amount, ?string $assetId = null): LedgerEntry
+    public function createLedgerEntry(LedgerFlag $lF, string $hash160, int $amount, ?string $assetId = null): LedgerEntry
     {
         return new LedgerEntry($this->p, $this, $lF, $hash160, $amount, $assetId);
     }
@@ -286,7 +411,7 @@ abstract class AbstractTxReceipt
     /**
      * @param LedgerEntry ...$entries
      */
-    protected function registerLedgerEntriesBatch(LedgerEntry ...$entries): void
+    public function registerLedgerEntriesBatch(LedgerEntry ...$entries): void
     {
         $this->ledgerEntries->addBatch(...$entries);
     }

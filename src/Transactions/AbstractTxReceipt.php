@@ -130,13 +130,13 @@ abstract class AbstractTxReceipt
 
         if ($receipt->totalOut() !== $totalOut) {
             throw new TxReceiptDecodeException(
-                sprintf('Receipt total in "%d" does not match actual total in "%d"', $receipt->totalOut(), $totalOut)
+                sprintf('Receipt total out "%d" does not match actual total out "%d"', $receipt->totalOut(), $totalOut)
             );
         }
 
         if ($receipt->totalFee() !== $totalFee) {
             throw new TxReceiptDecodeException(
-                sprintf('Receipt total in "%d" does not match actual total in "%d"', $receipt->totalFee(), $totalFee)
+                sprintf('Receipt total fee "%d" does not match actual total fee "%d"', $receipt->totalFee(), $totalFee)
             );
         }
 

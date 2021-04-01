@@ -318,11 +318,11 @@ abstract class AbstractTxReceipt
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function status(): int
+    public function status(): ?int
     {
-        return $this->status ?? -1;
+        return $this->status;
     }
 
     /**

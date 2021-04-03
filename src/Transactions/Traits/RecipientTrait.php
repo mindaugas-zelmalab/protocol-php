@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions\Traits;
 
-use ForwardBlock\Protocol\Accounts\ChainAccountInterface;
+use ForwardBlock\Protocol\KeyPair\PublicKey;
 
 /**
  * Trait RecipientTrait
@@ -12,13 +12,13 @@ use ForwardBlock\Protocol\Accounts\ChainAccountInterface;
 trait RecipientTrait
 {
     /**
-     * @param ChainAccountInterface $recipient
+     * @param PublicKey $recipient
      * @return $this
      */
-    public function sendToRecipient(ChainAccountInterface $recipient): self
+    public function sendToRecipient(PublicKey $recipient): self
     {
         if (isset($this->recipientPubKey)) {
-            $this->recipientPubKey = $recipient->getPublicKey();
+            $this->recipientPubKey = $recipient;
         }
 
         return $this;

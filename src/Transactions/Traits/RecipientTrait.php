@@ -17,8 +17,9 @@ trait RecipientTrait
      */
     public function sendToRecipient(PublicKey $recipient): self
     {
-        if (isset($this->recipientPubKey)) {
+        if (property_exists($this, "recipientPubKey") && property_exists($this, "recipient")) {
             $this->recipientPubKey = $recipient;
+            $this->recipient = hex2bin($recipient->getHash160());
         }
 
         return $this;

@@ -253,7 +253,7 @@ abstract class AbstractPreparedTx extends AbstractTx implements PreparedOrChecke
         $hexProps = ["sender", "recipient"];
         foreach ($props as $prop) {
             if (isset($this->$prop)) {
-                $partialTx[$prop] = in_array($prop, $hexProps) ? $this->$prop : bin2hex($this->$prop);
+                $partialTx[$prop] = in_array($prop, $hexProps) ? bin2hex($this->$prop) : $this->$prop;
             }
         }
 

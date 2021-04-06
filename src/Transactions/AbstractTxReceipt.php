@@ -21,8 +21,8 @@ abstract class AbstractTxReceipt
 {
     /** @var AbstractProtocolChain */
     protected AbstractProtocolChain $p;
-    /** @var AbstractPreparedTx|null */
-    protected ?AbstractPreparedTx $tx = null;
+    /** @var AbstractPreparedTx */
+    protected AbstractPreparedTx $tx;
     /** @var int */
     protected int $blockHeightContext;
 
@@ -42,13 +42,13 @@ abstract class AbstractTxReceipt
 
     /**
      * @param AbstractProtocolChain $p
-     * @param AbstractPreparedTx|null $tx
+     * @param AbstractPreparedTx $tx
      * @param int $blockHeightContext
      * @param Binary $encoded
      * @return static
      * @throws TxReceiptDecodeException
      */
-    public static function Decode(AbstractProtocolChain $p, ?AbstractPreparedTx $tx, int $blockHeightContext, Binary $encoded): self
+    public static function Decode(AbstractProtocolChain $p, AbstractPreparedTx $tx, int $blockHeightContext, Binary $encoded): self
     {
         $receipt = new static($p, $tx, $blockHeightContext);
 
@@ -60,7 +60,7 @@ abstract class AbstractTxReceipt
 
         // Step 1
         $txId = $read->first(32);
-        if ($tx && $txId !== $tx->hash()->raw()) {
+        if ($txId !== $tx->hash()->raw()) {
             throw new TxReceiptDecodeException(sprintf(
                 'Receipt for tx "0x%s" does not match transaction hash "0x%s"', bin2hex($txId), bin2hex($tx->hash()->raw())
             ));
@@ -147,10 +147,10 @@ abstract class AbstractTxReceipt
     /**
      * AbstractTxReceipt constructor.
      * @param AbstractProtocolChain $p
-     * @param AbstractPreparedTx|null $tx
+     * @param AbstractPreparedTx $tx
      * @param int $blockHeightContext
      */
-    public function __construct(AbstractProtocolChain $p, ?AbstractPreparedTx $tx, int $blockHeightContext)
+    public function __construct(AbstractProtocolChain $p, AbstractPreparedTx $tx, int $blockHeightContext)
     {
         $this->p = $p;
         $this->data = new Binary();
@@ -272,10 +272,6 @@ abstract class AbstractTxReceipt
      */
     public function getTx(): AbstractPreparedTx
     {
-        if (!$this->tx) {
-            throw new \UnexpectedValueException('Tx instance was never stored');
-        }
-
         return $this->tx;
     }
 

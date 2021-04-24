@@ -1,4 +1,5 @@
 <?php
+/** @noinspection ALL */
 declare(strict_types=1);
 
 namespace ForwardBlock\Protocol;
@@ -14,8 +15,7 @@ use ForwardBlock\Protocol\Exception\ProtocolConfigException;
  * @property-read int $accountsPrefix
  * @property-read string $fancyPrefix
  * @property-read int $fancyPrefixLen
- * @property-read int $wifPubPrefix
- * @property-read int $wifPrvPrefix
+ * @property-read int $wifPrefix
  */
 class Config
 {
@@ -30,9 +30,7 @@ class Config
     /** @var int */
     private int $fancyPrefixLen;
     /** @var int */
-    private int $wifPubPrefix;
-    /** @var int */
-    private int $wifPrvPrefix;
+    private int $wifPrefix;
 
     /**
      * Protocol constructor.
@@ -75,19 +73,12 @@ class Config
         $this->fancyPrefixLen = strlen($fancy);
 
         // WIF
-        $wifPub = $args["wifPubPrefix"];
-        if (!is_int($wifPub) || !Integers::Range($wifPub, 0, 0xffffffff)) {
-            throw new ProtocolConfigException('Invalid public key WIF prefix');
+        $wifPrefix = $args["wifPrefix"];
+        if (!is_int($wifPrefix) || !Integers::Range($wifPrefix, 0, 0xff)) {
+            throw new ProtocolConfigException('Invalid WIF prefix');
         }
 
-        $this->wifPubPrefix = $wifPub;
-
-        $wifPrv = $args["wifPrvPrefix"];
-        if (!is_int($wifPrv) || !Integers::Range($wifPrv, 0, 0xffffffff)) {
-            throw new ProtocolConfigException('Invalid private key WIF prefix');
-        }
-
-        $this->wifPrvPrefix = $wifPrv;
+        $this->wifPrefix = $wifPrefix;
     }
 
     /**

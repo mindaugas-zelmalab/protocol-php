@@ -79,7 +79,7 @@ class AccountsProto
                     if ($pub->getCompressed()->hexits(false) === $pubKeyCompressed) {
                         if (in_array($pubKeyCompressed, $verifiedPubKeys)) {
                             throw new VerifySignaturesException(
-                                'Repeating public key in verified signatures',
+                                sprintf('Repeating public key at index %d in verified signatures', $pubIn),
                                 VerifySignaturesException::REPEATED_PUB_KEY
                             );
                         }
@@ -96,6 +96,35 @@ class AccountsProto
         }
 
         return $verified;
+    }
+
+    /**
+     * @param string $addr
+     * @param bool $removePrefix
+     * @param bool $returnHex
+     * @return string
+     */
+    public function addressToHash160(string $addr, bool $removePrefix = true, bool $returnHex = true): string
+    {
+        $protocolConfig = $this->p->config();
+        if ($protocolConfig->fancyPrefixLen) {
+            $addr = substr($addr, $protocolConfig->fancyPrefixLen);
+        }
+
+        $base58Check = Base58Check::getInstance();
+        $hash160 = $base58Check->decode($addr)->value();
+        $expBytes = $removePrefix ? 0x28 : 0x2a;
+        if ($removePrefix) {
+            $hash160 = substr($hash160, 2);
+        }
+
+        if (strlen($hash160) !== $expBytes) {
+            throw new \UnexpectedValueException(
+                sprintf('Expected hash160 of %d bytes; got %d bytes', $expBytes / 2, strlen($hash160) / 2)
+            );
+        }
+
+        return $returnHex ? $hash160 : hex2bin($hash160);
     }
 
     /**

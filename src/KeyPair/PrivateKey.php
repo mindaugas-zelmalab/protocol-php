@@ -56,14 +56,57 @@ class PrivateKey extends \FurqanSiddiqui\BIP32\KeyPair\PrivateKey
         }
 
         try {
-            $curve = $this->p->secp256k1();
-            $signed = $curve->sign($this->privateKey, $msgHash);
-            $v = $this->p->secp256k1()->findRecoveryId($this->publicKey()->getEllipticCurvePubKeyObj(), $signed, $msgHash, true);
-
-            return new Signature($this->nullPadded32($signed->r()), $this->nullPadded32($signed->s()), $v);
+            return $this->signWithValidRecId($msgHash);
         } catch (\Exception $e) {
             throw new SignMessageException(sprintf('Failed to sign message; [%s] %s', get_class($e), $e->getMessage()));
         }
+    }
+
+    /**
+     * @param Base16 $msgHash
+     * @param Base16|null $randK
+     * @param int $maxA Maximum number of attempts
+     * @return Signature
+     * @throws \FurqanSiddiqui\BIP32\Exception\PublicKeyException
+     */
+    private function signWithValidRecId(Base16 $msgHash, ?Base16 $randK = null, int $maxA = 10): Signature
+    {
+        for ($i = 0; $i < $maxA; $i++) {
+            if ($randK && $i > 0) {
+                $tweakedBits = $this->tweakRandK(gmp_strval(gmp_init($randK->hexits(false), 16), 2), $i);
+                $randK = new Base16(gmp_strval(gmp_init($tweakedBits, 2), 16));
+            }
+
+            $curve = $this->p->secp256k1();
+            $signed = $curve->sign($this->privateKey, $msgHash, $randK);
+
+            try {
+                $v = $this->p->secp256k1()->findRecoveryId($this->publicKey()->getEllipticCurvePubKeyObj(), $signed, $msgHash, true);
+            } catch (\RuntimeException $e) {
+                $randK = $signed->randK();
+                continue;
+            }
+
+            return new Signature($this->nullPadded32($signed->r()), $this->nullPadded32($signed->s()), $v);
+        }
+
+        throw new \UnexpectedValueException(sprintf('Failed to find signature with valid recovery Id in %d attempts', $maxA));
+    }
+
+    /**
+     * @param string $bits
+     * @param int $itN Iterations count
+     * @return string
+     */
+    private function tweakRandK(string $bits, int $itN = 0): string
+    {
+        for ($i = 0; $i < $itN; $i++) {
+            $bits = $this->tweakRandK($bits, 0);
+        }
+
+        $pos = strrpos($bits, "0");
+        $bits[$pos] = "1";
+        return $bits;
     }
 
     /**

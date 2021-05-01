@@ -55,6 +55,22 @@ class Validator
     }
 
     /**
+     * @param $in
+     * @return bool
+     */
+    public static function isValidUsername($in): bool
+    {
+        if (is_string($in)) {
+            try {
+                return $in === self::validatedMemo($in);
+            } catch (\Exception $e) {
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param $memo
      * @return string
      */

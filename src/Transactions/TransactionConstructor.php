@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace ForwardBlock\Protocol\Transactions;
 
-use Comely\DataTypes\Buffer\Binary;
 use ForwardBlock\Protocol\AbstractProtocolChain;
+use ForwardBlock\Protocol\Transactions\Traits\CustomDataTrait;
+use ForwardBlock\Protocol\Transactions\Traits\RecipientTrait;
+use ForwardBlock\Protocol\Transactions\Traits\TransferObjectsTrait;
 
 /**
  * Class TransactionConstructor
@@ -12,6 +14,10 @@ use ForwardBlock\Protocol\AbstractProtocolChain;
  */
 class TransactionConstructor extends AbstractTxConstructor
 {
+    use RecipientTrait;
+    use CustomDataTrait;
+    use TransferObjectsTrait;
+
     /**
      * TransactionConstructor constructor.
      * @param AbstractProtocolChain $p
@@ -23,16 +29,6 @@ class TransactionConstructor extends AbstractTxConstructor
     public function __construct(AbstractProtocolChain $p, int $ver, AbstractTxFlag $flag, int $epoch)
     {
         parent::__construct($p, $ver, $flag, $epoch);
-    }
-
-    /**
-     * @param Binary $data
-     * @return $this
-     */
-    public function setData(Binary $data): self
-    {
-        $this->data = $data;
-        return $this;
     }
 
     public function beforeSerialize(): void

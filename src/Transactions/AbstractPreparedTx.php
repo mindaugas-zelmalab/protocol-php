@@ -29,7 +29,7 @@ abstract class AbstractPreparedTx extends AbstractTx implements PreparedOrChecke
      * @return static
      * @throws TxDecodeException
      */
-    public static function Decode(AbstractProtocolChain $p, Binary $encoded): self
+    final public static function Decode(AbstractProtocolChain $p, Binary $encoded): self
     {
         return new static($p, $encoded);
     }
@@ -220,6 +220,25 @@ abstract class AbstractPreparedTx extends AbstractTx implements PreparedOrChecke
         if ($read->remaining()) {
             throw TxDecodeException::Incomplete($this, 'Transaction byte reader has excess bytes');
         }
+    }
+
+    /**
+     * This methods returns a NEW INSTANCE after appending transaction
+     * @param Signature $signature
+     * @return $this
+     * @throws TxDecodeException
+     * @throws \ForwardBlock\Protocol\Exception\TxEncodeException
+     */
+    public function appendSignature(Signature $signature): self
+    {
+        // Temporarily add new signature
+        $this->signs[] = $signature;
+        // Get encoded bytes for new instance
+        $serialized = $this->serialize(true);
+        // Remove the last appended signature
+        array_pop($this->signs);
+
+        return static::Decode($this->p, $serialized);
     }
 
     /**

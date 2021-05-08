@@ -72,4 +72,21 @@ class KeyPairFactory
 
         return $this->privateKeyFromEntropy($entropy);
     }
+
+    /**
+     * @param string $wif
+     * @param bool $isCompressed
+     * @return PrivateKey
+     * @throws KeyPairException
+     */
+    public function privateKeyFromWIF(string $wif, bool $isCompressed = true): PrivateKey
+    {
+        try {
+            $entropy = WIF::Decode($this->protocol->config()->wifPrefix, $wif, $isCompressed);
+        } catch (\Exception $e) {
+            throw new KeyPairException(sprintf('Failed to decode WIF; [%s][%s] %s', get_class($e), $e->getCode(), $e->getMessage()));
+        }
+
+        return $this->privateKeyFromEntropy($entropy);
+    }
 }

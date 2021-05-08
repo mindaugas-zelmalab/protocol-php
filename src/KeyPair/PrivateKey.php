@@ -45,6 +45,14 @@ class PrivateKey extends \FurqanSiddiqui\BIP32\KeyPair\PrivateKey
     }
 
     /**
+     * @return string
+     */
+    public function export(): string
+    {
+        return (WIF::Encode($this->p->config()->wifPrefix, $this->privateKey->hexits(false), true))->value();
+    }
+
+    /**
      * @param Base16 $msgHash
      * @return Signature
      * @throws SignMessageException

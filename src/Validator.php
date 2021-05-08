@@ -5,6 +5,7 @@ namespace ForwardBlock\Protocol;
 
 use Comely\DataTypes\Buffer\Base16;
 use Comely\DataTypes\Buffer\Binary;
+use FurqanSiddiqui\Base58\Base58;
 
 /**
  * Class Validator
@@ -37,6 +38,16 @@ class Validator
     public static function isValidAssetId($assetId): bool
     {
         return is_string($assetId) && preg_match('/^[a-z][a-z0-9]{1,3}-[a-z]{2}[0-9]$/i', $assetId);
+    }
+
+    /**
+     * @param $arg
+     * @param int $len
+     * @return bool
+     */
+    public static function isValidWIF($arg, int $len = 52): bool
+    {
+        return is_string($arg) && preg_match('/^[' . preg_quote(Base58::CHARSET, "/") . ']{' . $len . '}$/', $arg);
     }
 
     /**

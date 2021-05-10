@@ -14,6 +14,10 @@ use ForwardBlock\Protocol\Validator;
 /**
  * Class AbstractBlock
  * @package ForwardBlock\Protocol\Blocks
+ * @property-read int $txCount
+ * @property-read int $totalIn
+ * @property-read int $totalOut
+ * @property-read int $totalFee
  */
 abstract class AbstractBlock
 {
@@ -61,6 +65,23 @@ abstract class AbstractBlock
         $this->p = $p;
         $this->txs = new BlockTxs($p);
         $this->txsReceipts = new BlockTxReceipts($p);
+    }
+
+    /**
+     * @param string $prop
+     * @return mixed
+     */
+    public function __get(string $prop)
+    {
+        switch ($prop) {
+            case "txCount":
+            case "totalIn":
+            case "totalOut":
+            case "totalFee":
+                return $this->$prop;
+        }
+
+        throw new \OutOfBoundsException(sprintf('Cannot get value of inaccessible property "%s"', $prop));
     }
 
     /**

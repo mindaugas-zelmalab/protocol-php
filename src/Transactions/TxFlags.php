@@ -94,7 +94,7 @@ class TxFlags
     public function get(int $id): AbstractTxFlag
     {
         if (!$this->has($id)) {
-            throw new TxFlagException(sprintf('Cannot find TxFlag with ID %d (0x%s)', $id, UInts::Encode_UInt1LE($id)));
+            throw new TxFlagException(sprintf('Cannot find TxFlag with ID %d (0x%s)', $id, bin2hex(UInts::Encode_UInt1LE($id))));
         }
 
         return $this->flags[$id];

@@ -197,9 +197,9 @@ abstract class AbstractTxReceipt
                     }
 
                     if ($ledgerEntry->flag()->isCredit()) {
-                        $this->totalOut = $ledgerEntry->amount();
+                        $this->totalOut += $ledgerEntry->amount();
                     } else {
-                        $this->totalIn = $ledgerEntry->amount();
+                        $this->totalIn += $ledgerEntry->amount();
                     }
                 }
             }

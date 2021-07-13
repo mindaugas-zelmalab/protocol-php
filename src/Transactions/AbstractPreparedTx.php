@@ -370,11 +370,11 @@ abstract class AbstractPreparedTx extends AbstractTx implements PreparedOrChecke
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function data(): string
+    public function data(): ?string
     {
-        return $this->data->raw();
+        return $this->data ? $this->data->raw() : null;
     }
 
     /**

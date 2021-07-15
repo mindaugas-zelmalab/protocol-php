@@ -41,6 +41,31 @@ class Validator
     }
 
     /**
+     * @param $assetTicker
+     * @return bool
+     */
+    public static function isValidAssetTicker($assetTicker): bool
+    {
+        return is_string($assetTicker) && preg_match('/^[a-z][a-z0-9]{1,5}$/i', $assetTicker);
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public static function isValidAssetName($name): bool
+    {
+        if (is_string($name) && preg_match('/^\w+(\s\w+)*$/i', $name)) {
+            $len = strlen($name);
+            if ($len > 0 && $len < 32) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @param $arg
      * @param int $len
      * @return bool
